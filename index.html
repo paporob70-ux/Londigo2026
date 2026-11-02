@@ -1997,6 +1997,8 @@
             updateGlobalProgress();
             renderItineraries();
             showToast(doneActivities[id] ? "✅ Activité marquée comme faite !" : "↩️ Activité remise dans « À faire »");
+            if (window.syncToCloud) window.syncToCloud(doneActivities);
+}
         }
 
         function toggleHotspotTested(id, event) {
