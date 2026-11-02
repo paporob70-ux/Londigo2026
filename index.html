@@ -1997,8 +1997,6 @@
             updateGlobalProgress();
             renderItineraries();
             showToast(doneActivities[id] ? "✅ Activité marquée comme faite !" : "↩️ Activité remise dans « À faire »");
-            if (window.syncToCloud) window.syncToCloud(doneActivities);
-}
         }
 
         function toggleHotspotTested(id, event) {
@@ -3206,87 +3204,6 @@
             updateCollabHeaderUI();
             switchDay(0);
         };
-    </script>
-    <!-- ========================================== -->
-    <!-- MOTEUR COLLABORATIF FIREBASE CLOUD         -->
-    <!-- ========================================== -->
-    <script type="module">
-        // 1. Importations compatibles avec un fichier HTML simple sur GitHub Pages
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-        // 2. VOS clés exactes (extraites de votre capture d'écran)
-        const firebaseConfig = {
-            apiKey: "AIzaSyAteN0zI7V6dFf4XcPXzBy3lwVvLV77seM",
-            authDomain: "londigo-81c1d.firebaseapp.com",
-            databaseURL: "https://londigo-81c1d-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "londigo-81c1d",
-            storageBucket: "londigo-81c1d.firebasestorage.app",
-            messagingSenderId: "910470918290",
-            appId: "1:910470918290:web:c7bb7c5bfbe9c97f46364b",
-            measurementId: "G-EKTY79PDZM"
-        };
-
-        // 3. Initialisation de Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
-
-        // 4. Gestion du salon (Room) via l'URL
-        const urlParams = new URLSearchParams(window.location.search);
-        let roomId = urlParams.get('room');
-        if (!roomId) {
-            // S'il n'y a pas de room dans l'URL, on en crée une et on l'ajoute à la barre d'adresse
-            roomId = 'room_' + Math.random().toString(36).substr(2, 9);
-            window.history.replaceState({}, '', `${window.location.pathname}?room=${roomId}`);
-        }
-
-        // 5. Connexion invisible
-        signInAnonymously(auth).catch(error => console.error("Erreur Firebase Auth:", error));
-
-        // 6. Écoute de la base de données en temps réel
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const activitiesRef = ref(db, 'voyages/' + roomId + '/activities');
-                
-                // Dès que quelqu'un modifie une donnée, cette fonction se déclenche chez tout le monde
-                onValue(activitiesRef, (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        // On met à jour la variable globale et l'affichage
-                        window.doneActivities = data; 
-                        localStorage.setItem('london2026_done_v3', JSON.stringify(window.doneActivities));
-                        
-                        if(typeof window.updateGlobalProgress === 'function') window.updateGlobalProgress();
-                        if(typeof window.renderItineraries === 'function') window.renderItineraries();
-                    }
-                });
-            }
-        });
-
-        // 7. Fonction pour envoyer vos propres clics vers le cloud
-        window.syncToCloud = function(activitiesState) {
-            if (roomId) {
-                set(ref(db, `voyages/${roomId}/activities`), activitiesState);
-            }
-        };
-
-        // 8. Fonction de partage (WhatsApp, SMS, etc.)
-        window.shareVoyage = function() {
-            const shareUrl = window.location.href; 
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Carnet Londres 2026',
-                    text: 'Rejoins notre carnet de voyage interactif pour Londres !',
-                    url: shareUrl
-                }).catch(console.error);
-            } else {
-                navigator.clipboard.writeText(shareUrl);
-                alert("Lien copié dans le presse-papier : " + shareUrl);
-            }
-        };
-    </script>
-
+    
 </body>
 </html>
