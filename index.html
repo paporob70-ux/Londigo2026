@@ -5,27 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Londigo - Guide & Checklist Londres 2026</title>
     
-    <!-- PWA Meta Tags (Edge, Chrome, Safari, iOS & Android) -->
-    <meta name="theme-color" content="#2563eb" id="meta-theme-color">
+    <!-- PWA Meta Tags (Compatibilité Edge, Chrome, iOS & Android) -->
+    <meta name="theme-color" content="#2563eb">
+    <meta name="application-name" content="Londigo">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Londigo">
-    <meta name="application-name" content="Londigo">
-    <meta name="description" content="Carnet de voyage collaboratif Londres 5-8 Novembre 2026">
-    
-    <!-- Manifest PWA intégré pour installation sur Microsoft Edge / Chrome / Mobile -->
-    <link rel="manifest" id="pwa-manifest-link" href='data:application/manifest+json,{"name":"Londigo - Londres 2026","short_name":"Londigo","description":"Guide et Checklist Londres 5-8 Novembre 2026","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#2563eb","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/825/825590.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/825/825590.png">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/825/825590.png">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%232563eb'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='280' font-family='sans-serif'%3E%F0%9F%87%AC%F0%9F%87%A7%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%232563eb'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='280' font-family='sans-serif'%3E%F0%9F%87%AC%F0%9F%87%A7%3C/text%3E%3C/svg%3E">
+    <link id="pwa-manifest-link" rel="manifest" href='data:application/manifest+json,{"name":"Londigo - Guide Londres 2026","short_name":"Londigo","description":"Carnet de voyage interactif Londres 5-8 Nov 2026","start_url":"./","scope":"./","display":"standalone","background_color":"#0f172a","theme_color":"#2563eb","orientation":"any"}'>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        };
+    </script>
     
     <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-
+    
     <!-- Confetti JS -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
@@ -42,130 +44,153 @@
         .liquid-glass {
             background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
             border: 1px solid rgba(226, 232, 240, 0.9);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-            transition: background-color 0.25s ease, border-color 0.25s ease;
+            transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
-        .airbnb-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .airbnb-card { transition: transform 0.2s, box-shadow 0.2s, background-color 0.25s; }
         .airbnb-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
         .leaflet-popup-content-wrapper { border-radius: 18px !important; box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important; padding: 4px !important; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 10px; }
 
-        /* --- MODE SOMBRE AUTOMATIQUE (SUIT LE TÉLÉPHONE OU BOUTON MANUEL) --- */
+        /* --- DESIGN APPLE LIQUID GLASS (BARRE D'ONGLETS FLOTTANTE TRANSLUCIDE) --- */
+        .apple-liquid-dock {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.44) 0%, rgba(255, 255, 255, 0.20) 100%) !important;
+            backdrop-filter: blur(36px) saturate(210%) !important;
+            -webkit-backdrop-filter: blur(36px) saturate(210%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.68) !important;
+            box-shadow:
+                0 20px 45px -10px rgba(15, 23, 42, 0.22),
+                inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.88),
+                inset 0 -1px 1px 0 rgba(255, 255, 255, 0.28) !important;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        html.dark .apple-liquid-dock {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.50) 0%, rgba(15, 23, 42, 0.28) 100%) !important;
+            backdrop-filter: blur(36px) saturate(210%) !important;
+            -webkit-backdrop-filter: blur(36px) saturate(210%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            box-shadow:
+                0 22px 50px -10px rgba(0, 0, 0, 0.68),
+                inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
+                inset 0 -1px 1px 0 rgba(255, 255, 255, 0.06) !important;
+        }
+        .apple-tab-active {
+            background: linear-gradient(180deg, rgba(37, 99, 235, 0.86) 0%, rgba(29, 78, 216, 0.78) 100%) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.45) !important;
+            box-shadow:
+                0 8px 20px -4px rgba(37, 99, 235, 0.52),
+                inset 0 1px 1px 0 rgba(255, 255, 255, 0.55) !important;
+        }
+        .apple-tab-inactive {
+            background: transparent !important;
+            border: 1px solid transparent !important;
+            color: #1e293b !important;
+        }
+        .apple-tab-inactive:hover {
+            background: rgba(255, 255, 255, 0.35) !important;
+            border-color: rgba(255, 255, 255, 0.45) !important;
+        }
+        html.dark .apple-tab-inactive {
+            color: #e2e8f0 !important;
+        }
+        html.dark .apple-tab-inactive:hover {
+            background: rgba(255, 255, 255, 0.09) !important;
+            border-color: rgba(255, 255, 255, 0.14) !important;
+        }
+
+        /* --- MODE SOMBRE AUTOMATIQUE & MANUEL --- */
         html.dark body {
-            background-color: #0b1120 !important;
-            color: #f1f5f9 !important;
+            background-color: #0b1120;
+            color: #f1f5f9;
         }
         html.dark .liquid-glass {
-            background: rgba(15, 23, 42, 0.92) !important;
-            border-color: rgba(51, 65, 85, 0.85) !important;
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45) !important;
+            background: rgba(15, 23, 42, 0.88);
+            border-color: rgba(51, 65, 85, 0.85);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
         }
         html.dark #main-content-panel {
             background-color: rgba(11, 17, 32, 0.95) !important;
         }
         html.dark .bg-white {
             background-color: #1e293b !important;
-            color: #f1f5f9 !important;
         }
-        html.dark .bg-white\/90,
-        html.dark .bg-white\/95 {
+        html.dark .bg-white\/90, html.dark .bg-white\/95 {
             background-color: rgba(30, 41, 59, 0.92) !important;
-            color: #f1f5f9 !important;
-            border-color: #334155 !important;
         }
-        html.dark .bg-slate-50,
-        html.dark .bg-slate-100,
-        html.dark .bg-slate-200\/70 {
+        html.dark .bg-slate-50, html.dark .bg-slate-100, html.dark .bg-slate-100\/70 {
             background-color: #0f172a !important;
-            color: #e2e8f0 !important;
         }
-        html.dark .text-slate-900,
-        html.dark .text-slate-800 {
+        html.dark .bg-slate-200\/70, html.dark .bg-slate-200 {
+            background-color: #334155 !important;
+        }
+        html.dark .text-slate-900, html.dark .text-slate-800 {
             color: #f8fafc !important;
         }
-        html.dark .text-slate-700,
-        html.dark .text-slate-600 {
+        html.dark .text-slate-700, html.dark .text-slate-600 {
             color: #cbd5e1 !important;
         }
-        html.dark .text-slate-500,
-        html.dark .text-slate-400 {
+        html.dark .text-slate-500, html.dark .text-slate-400 {
             color: #94a3b8 !important;
         }
-        html.dark .border-slate-100,
-        html.dark .border-slate-200,
-        html.dark .border-slate-200\/80,
-        html.dark .border-slate-200\/90,
-        html.dark .border-slate-300 {
+        html.dark .border-slate-100, html.dark .border-slate-200, html.dark .border-slate-200\/80, html.dark .border-slate-300, html.dark .border-white {
             border-color: #334155 !important;
         }
-        html.dark input,
-        html.dark textarea,
-        html.dark select {
-            background-color: #0f172a !important;
-            color: #f8fafc !important;
-            border-color: #475569 !important;
+        html.dark .bg-blue-50, html.dark .bg-blue-50\/70 {
+            background-color: rgba(37, 99, 235, 0.18) !important;
         }
-        html.dark .bg-emerald-50\/60,
-        html.dark .bg-emerald-50\/70,
-        html.dark .bg-emerald-50\/50,
-        html.dark .bg-emerald-50\/40,
-        html.dark .bg-emerald-50 {
-            background-color: rgba(6, 78, 59, 0.35) !important;
-            border-color: rgba(16, 185, 129, 0.4) !important;
+        html.dark .text-blue-700, html.dark .text-blue-800, html.dark .text-blue-600 {
+            color: #60a5fa !important;
         }
-        html.dark .text-emerald-800,
-        html.dark .text-emerald-700 {
-            color: #6ee7b7 !important;
+        html.dark .border-blue-100, html.dark .border-blue-200 {
+            border-color: rgba(59, 130, 246, 0.35) !important;
         }
-        html.dark .bg-blue-50,
-        html.dark .bg-blue-50\/70 {
-            background-color: rgba(30, 58, 138, 0.35) !important;
-            border-color: rgba(59, 130, 246, 0.4) !important;
+        html.dark .bg-emerald-50\/60, html.dark .bg-emerald-50\/70, html.dark .bg-emerald-100 {
+            background-color: rgba(16, 185, 129, 0.16) !important;
         }
-        html.dark .text-blue-800,
-        html.dark .text-blue-700 {
-            color: #93c5fd !important;
+        html.dark .text-emerald-700, html.dark .text-emerald-800 {
+            color: #34d399 !important;
         }
-        html.dark .bg-purple-100,
-        html.dark .bg-purple-50\/40,
-        html.dark .bg-purple-50\/70 {
-            background-color: rgba(88, 28, 135, 0.38) !important;
-            color: #e9d5ff !important;
-            border-color: rgba(168, 85, 247, 0.4) !important;
+        html.dark .border-emerald-200 {
+            border-color: rgba(16, 185, 129, 0.35) !important;
         }
-        html.dark .text-purple-800,
+        html.dark .bg-amber-50, html.dark .bg-amber-50\/40 {
+            background-color: rgba(245, 158, 11, 0.16) !important;
+        }
+        html.dark .text-amber-700 {
+            color: #fbbf24 !important;
+        }
+        html.dark .border-amber-200, html.dark .border-amber-300 {
+            border-color: rgba(245, 158, 11, 0.35) !important;
+        }
+        html.dark .bg-purple-100 {
+            background-color: rgba(147, 51, 234, 0.22) !important;
+        }
         html.dark .text-purple-700 {
-            color: #d8b4fe !important;
+            color: #c084fc !important;
         }
-        html.dark .bg-pink-100,
-        html.dark .bg-pink-50\/40,
-        html.dark .bg-pink-50\/70 {
-            background-color: rgba(131, 24, 67, 0.38) !important;
-            color: #fbcfe8 !important;
-            border-color: rgba(236, 72, 153, 0.4) !important;
+        html.dark .bg-pink-100 {
+            background-color: rgba(219, 39, 119, 0.22) !important;
         }
-        html.dark .text-pink-800,
-        html.dark .text-pink-700 {
-            color: #f9a8d4 !important;
+        html.dark .text-pink-700, html.dark .text-pink-600 {
+            color: #f472b6 !important;
         }
-        html.dark .bg-amber-50,
-        html.dark .bg-amber-100 {
-            background-color: rgba(120, 53, 15, 0.4) !important;
-            color: #fde68a !important;
-        }
-        html.dark .leaflet-popup-content-wrapper,
-        html.dark .leaflet-popup-tip {
+        html.dark .leaflet-popup-content-wrapper, html.dark .leaflet-popup-tip {
             background-color: #1e293b !important;
             color: #f8fafc !important;
         }
-        html.dark .map-tiles-streets {
-            filter: brightness(0.84) contrast(1.08) saturate(0.92);
+        html.dark #map {
+            filter: brightness(0.88) contrast(1.08);
         }
         html.dark ::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.22);
         }
+
         @keyframes pulseHighlight {
             0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
             50% { box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.35); }
@@ -177,42 +202,42 @@
 </head>
 <body class="h-[100dvh] w-screen overflow-hidden flex flex-col antialiased select-none md:select-auto">
 
-    <!-- MODAL AUTHENTIFICATION SÉCURISÉE PAR CODE PIN (1712 SANS INDICE) -->
-    <div id="auth-modal" class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/85 backdrop-blur-lg p-4 transition-opacity duration-300">
+    <!-- MODAL AUTHENTIFICATION PAR CODE SECRET -->
+    <div id="auth-modal" class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/80 backdrop-blur-lg p-4 transition-opacity duration-300">
         <div class="bg-white rounded-3xl max-w-sm w-full p-7 shadow-2xl border border-slate-100 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
-            <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-3xl mx-auto shadow-inner mb-3">
+            <div class="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-3xl mx-auto shadow-inner mb-3">
                 🔒
             </div>
             <h2 class="text-xl font-extrabold text-slate-900">Accès Sécurisé Londigo</h2>
-            <p class="text-xs text-slate-500 mt-1 mb-5 leading-relaxed">Entrez le code à 4 chiffres pour déverrouiller votre carnet de voyage.</p>
+            <p class="text-xs text-slate-500 mt-1.5 mb-5 leading-relaxed">Entrez votre code confidentiel à 4 chiffres pour déverrouiller le guide.</p>
             
+            <!-- Champ de saisie + écouteurs clavier -->
             <div class="mb-4">
-                <input type="password" id="pin-input" inputmode="numeric" maxlength="4" placeholder="••••"
-                       class="w-full text-center tracking-[0.9em] rounded-2xl border-2 border-slate-200 bg-slate-50 px-4 py-3.5 text-2xl font-extrabold text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white shadow-sm"
-                       oninput="if(this.value.length === 4) window.checkPinCode()" 
-                       onkeydown="if(event.key === 'Enter') { event.preventDefault(); window.checkPinCode(); }" />
+                <input type="password" id="pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••" autocomplete="off"
+                       class="w-full text-center tracking-[0.75em] rounded-2xl border-2 border-slate-300 bg-slate-50 px-4 py-3.5 text-2xl font-extrabold text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white shadow-sm transition-all" />
             </div>
 
-            <!-- Pavé numérique tactile rapide -->
+            <!-- Pavé numérique tactile rapide (idéal mobile) -->
             <div class="grid grid-cols-3 gap-2 mb-4">
-                <button type="button" onclick="window.appendPinDigit('1')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-sm font-extrabold text-slate-800 transition-colors">1</button>
-                <button type="button" onclick="window.appendPinDigit('2')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-sm font-extrabold text-slate-800 transition-colors">2</button>
-                <button type="button" onclick="window.appendPinDigit('3')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-sm font-extrabold text-slate-800 transition-colors">3</button>
-                <button type="button" onclick="window.appendPinDigit('4')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-sm font-extrabold text-slate-800 transition-colors">4</button>
-                <button type="button" onclick="window.appendPinDigit('5')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-sm font-extrabold text-slate-800 transition-colors">5</button>
-                <button type="button" onclick="window.appendPinDigit('6')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-sm font-extrabold text-slate-800 transition-colors">6</button>
-                <button type="button" onclick="window.appendPinDigit('7')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-sm font-extrabold text-slate-800 transition-colors">7</button>
-                <button type="button" onclick="window.appendPinDigit('8')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-sm font-extrabold text-slate-800 transition-colors">8</button>
-                <button type="button" onclick="window.appendPinDigit('9')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-sm font-extrabold text-slate-800 transition-colors">9</button>
-                <button type="button" onclick="window.clearPinInput()" class="py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-xs font-extrabold text-rose-700 transition-colors">Effacer</button>
-                <button type="button" onclick="window.appendPinDigit('0')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-sm font-extrabold text-slate-800 transition-colors">0</button>
-                <button type="button" onclick="window.checkPinCode()" class="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-extrabold text-white transition-colors">OK ✓</button>
+                <button type="button" onclick="window.appendPinDigit('1')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-slate-800 font-extrabold text-sm transition-colors">1</button>
+                <button type="button" onclick="window.appendPinDigit('2')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-slate-800 font-extrabold text-sm transition-colors">2</button>
+                <button type="button" onclick="window.appendPinDigit('3')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-slate-800 font-extrabold text-sm transition-colors">3</button>
+                <button type="button" onclick="window.appendPinDigit('4')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-slate-800 font-extrabold text-sm transition-colors">4</button>
+                <button type="button" onclick="window.appendPinDigit('5')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-slate-800 font-extrabold text-sm transition-colors">5</button>
+                <button type="button" onclick="window.appendPinDigit('6')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-slate-800 font-extrabold text-sm transition-colors">6</button>
+                <button type="button" onclick="window.appendPinDigit('7')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-slate-800 font-extrabold text-sm transition-colors">7</button>
+                <button type="button" onclick="window.appendPinDigit('8')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-slate-800 font-extrabold text-sm transition-colors">8</button>
+                <button type="button" onclick="window.appendPinDigit('9')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-slate-800 font-extrabold text-sm transition-colors">9</button>
+                <button type="button" onclick="window.clearPinDigits()" class="py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition-colors">Effacer</button>
+                <button type="button" onclick="window.appendPinDigit('0')" class="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-blue-100 text-slate-800 font-extrabold text-sm transition-colors">0</button>
+                <button type="button" onclick="window.checkPinCode()" class="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition-colors">OK ✓</button>
             </div>
 
-            <button type="button" onclick="window.checkPinCode()" class="w-full py-3.5 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white text-sm font-extrabold shadow-lg transition-all">
+            <button type="button" id="pin-submit-btn" onclick="window.checkPinCode()" class="w-full py-3.5 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white text-sm font-extrabold shadow-md transition-all cursor-pointer">
                 Valider et ouvrir le carnet →
             </button>
+            
             <p id="pin-error" class="text-xs text-rose-600 font-bold hidden mt-3">❌ Code incorrect. Veuillez réessayer.</p>
         </div>
     </div>
@@ -237,147 +262,84 @@
         </div>
     </div>
 
-    <!-- MODAL RAPPEL HORAIRE & NOTES D'ÉTAPE -->
-    <div id="step-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl border border-slate-100 space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div>
-                    <span id="modal-step-time" class="text-[10px] font-extrabold uppercase text-blue-600">Horaire</span>
-                    <h3 id="modal-step-title" class="text-sm font-extrabold text-slate-900 mt-0.5">Étape</h3>
-                </div>
-                <button onclick="window.closeStepModal()" class="text-slate-400 hover:text-slate-700 text-xl font-bold">&times;</button>
-            </div>
-
-            <div class="bg-amber-50/80 border border-amber-200 rounded-2xl p-3.5 space-y-2.5">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-extrabold text-amber-900">🔔 Rappel Horaire Programmé</span>
-                    <button onclick="window.testImmediateNotification()" class="text-[10px] font-extrabold bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1 rounded-lg shadow-sm">
-                        Tester l'alerte maintenant
-                    </button>
-                </div>
-                <select id="modal-reminder-select" class="w-full rounded-xl border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-slate-800">
-                    <option value="none">Désactivé</option>
-                    <option value="0">À l'heure exacte de l'étape</option>
-                    <option value="15">15 minutes avant</option>
-                    <option value="30">30 minutes avant (idéal Eurostar / Musée)</option>
-                    <option value="60">1 heure avant</option>
-                </select>
-                <p class="text-[10px] text-amber-800">Vous recevrez un signal sonore et une notification à l'heure programmée.</p>
-            </div>
-
-            <div>
-                <label class="block text-xs font-extrabold text-slate-700 mb-1">📝 Note personnelle / Référence billet :</label>
-                <textarea id="modal-step-note" rows="3" placeholder="Ex: Code réservation, quai, consigne..." class="w-full rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white"></textarea>
-            </div>
-
-            <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
-                <button onclick="window.closeStepModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Annuler</button>
-                <button onclick="window.saveStepModal()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold shadow-sm">Enregistrer</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL PARTAGE COLLABORATIF & UTILISATEURS EN LIGNE -->
+    <!-- MODAL PARTAGE COLLABORATIF & RAPPELS -->
     <div id="collab-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/55 backdrop-blur-sm p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl border border-slate-100 max-h-[88vh] flex flex-col">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div class="flex items-center space-x-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
-                    <h3 class="text-sm font-extrabold text-slate-900">👥 Synchronisation Firebase Live</h3>
+                    <h3 class="text-sm font-extrabold text-slate-900">👥 Partage & Synchronisation</h3>
+                    <span id="modal-sync-badge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">⚡ Firebase Live</span>
                 </div>
                 <button onclick="window.closeCollabModal()" class="text-slate-400 text-xl font-bold">&times;</button>
             </div>
             <div class="overflow-y-auto space-y-4 py-3 pr-1 flex-1">
                 <div class="bg-blue-50/70 p-3.5 rounded-2xl border border-blue-200/80">
-                    <div class="flex items-center justify-between mb-1">
-                        <span class="text-[10px] font-extrabold uppercase text-blue-800">🔗 URL partagée entre vos appareils</span>
-                        <span id="modal-firebase-badge" class="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Firebase Connecté</span>
-                    </div>
-                    <p class="text-[10px] text-slate-600 mb-2">Ouvrez ce même lien sur vos Pixel 11 Pro, iPhone 17 Pro et iPad Air : chaque case cochée se met à jour en direct.</p>
+                    <span class="text-[10px] font-extrabold uppercase text-blue-800 block mb-1">🔗 Lien unique multi-appareils</span>
+                    <p class="text-[11px] text-slate-600 mb-2">Ouvrez ce même lien sur vos Pixel 11 Pro, iPhone 17 Pro ou iPad Air pour synchroniser les coches et voir qui est en ligne :</p>
                     <div class="flex items-center space-x-1.5 mt-1">
                         <input id="collab-share-url" type="text" readonly class="flex-1 rounded-xl border border-blue-200 bg-white px-2.5 py-2 text-[11px] font-mono text-slate-700 select-all" />
                         <button onclick="window.copyShareLink()" class="px-3 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold">Copier</button>
                     </div>
                 </div>
-
-                <!-- BOUTON INSTALLATION APPLICATION PWA (EDGE / CHROME / MOBILE) -->
-                <div class="bg-emerald-50/70 p-3.5 rounded-2xl border border-emerald-200 flex items-center justify-between gap-2">
+                <div class="bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200/80 flex items-center justify-between">
                     <div>
-                        <span class="text-[10px] font-extrabold uppercase text-emerald-800 block">📲 Installer l'application (PWA)</span>
-                        <p class="text-[10px] text-slate-600 mt-0.5">Pour installer Londigo sur Microsoft Edge, Chrome ou votre téléphone.</p>
+                        <span class="text-[10px] font-extrabold uppercase text-amber-800 block">🔔 Notifications & Rappels</span>
+                        <span class="text-[11px] text-slate-600">Tester une alerte sonore + bannière maintenant</span>
                     </div>
-                    <button onclick="window.triggerPwaInstall()" id="btn-pwa-install" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shrink-0 shadow-sm">
-                        Installer ⬇
-                    </button>
+                    <button onclick="window.testReminderNotification()" class="px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shrink-0">Tester 🔔</button>
                 </div>
-
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 flex items-center justify-between gap-2">
-                    <div class="text-xs">
-                        <span class="text-slate-400 font-bold block text-[10px] uppercase">Mon profil sur cet appareil</span>
-                        <b id="my-current-profile-name" class="text-slate-900">Voyageur</b>
-                    </div>
-                    <button onclick="window.promptChangeName()" class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-[11px] font-bold text-blue-600 hover:bg-blue-50">✏️ Renommer</button>
-                </div>
-
                 <div>
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-[11px] font-extrabold uppercase text-slate-500">Appareils & Utilisateurs connectés</span>
-                        <div class="flex items-center gap-2">
-                            <span id="online-count-pill" class="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">1 en ligne</span>
-                            <button onclick="window.cleanupOfflineAndDuplicateGuests()" class="text-[10px] font-extrabold text-rose-600 hover:underline" title="Supprimer les doublons et anciens invités hors-ligne">🧹 Nettoyer doublons</button>
+                        <span class="text-[11px] font-extrabold uppercase text-slate-500">Appareils & Invités connectés</span>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="window.cleanupOfflineAndDuplicateGuests()" class="text-[11px] text-rose-600 font-bold hover:underline" title="Supprimer les doublons et invités hors-ligne">🧹 Nettoyer doublons</button>
+                            <button onclick="window.changeUserNamePrompt()" class="text-[11px] text-blue-600 font-bold hover:underline">✏️ Mon prénom</button>
                         </div>
                     </div>
                     <div id="collab-participants-list" class="space-y-2"></div>
-                </div>
-                <div class="pt-2 border-t border-slate-100 flex justify-between items-center">
-                    <span class="text-[11px] text-slate-500">Accès protégé par code PIN</span>
-                    <button onclick="window.lockAppNow()" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold">🔒 Verrouiller l'écran</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- HEADER ÉPURÉ (LES CATÉGORIES SONT MAINTENANT EN DOCK FLOTTANT EN BAS) -->
-    <header class="liquid-glass z-30 px-4 md:px-6 py-3 flex items-center justify-between border-b border-slate-200/80 shrink-0 gap-3">
-        <div class="flex items-center space-x-3 min-w-0">
-            <div class="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl font-extrabold shadow-md shrink-0">🇬🇧</div>
+    <!-- HEADER ÉPURÉ (NAVIGATION DÉPLACÉE DANS LE DOCK FLOTTANT EN BAS) -->
+    <header class="liquid-glass z-30 px-3.5 sm:px-5 md:px-6 py-2.5 sm:py-3 flex items-center justify-between border-b border-slate-200/80 shrink-0">
+        <!-- Logo + Titre -->
+        <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-lg sm:text-xl font-extrabold shadow-md shrink-0">🇬🇧</div>
             <div class="min-w-0">
-                <div class="flex items-center gap-2">
-                    <h1 id="main-trip-title" class="font-extrabold text-base md:text-lg text-slate-900 tracking-tight leading-none truncate">Londigo</h1>
-                    <span id="global-progress-badge" class="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full shrink-0">0%</span>
+                <div class="flex items-center space-x-2">
+                    <h1 id="main-trip-title" class="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight leading-none truncate">Londigo</h1>
+                    <span id="live-sync-indicator" class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-100 text-emerald-700 shrink-0">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="live-online-count">1 en ligne</span>
+                    </span>
                 </div>
-                <div class="flex items-center space-x-1.5 mt-1">
-                    <span id="live-sync-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-                    <p id="live-sync-status" class="text-[11px] font-semibold text-slate-500 truncate max-w-[175px] sm:max-w-xs">Connexion Firebase...</p>
-                </div>
+                <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 truncate">5–8 Nov 2026 • 189 King's Cross Rd</p>
             </div>
         </div>
 
-        <!-- Actions Mobile bien espacées -->
-        <div class="flex items-center gap-2 md:hidden shrink-0">
-            <button onclick="window.cycleThemeMode()" id="theme-btn-mobile" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-extrabold border border-slate-200 shadow-sm active:scale-95 transition-all" title="Mode d'affichage (Auto / Jour / Nuit)">🌓</button>
-            <button onclick="window.lockAppNow()" class="p-2.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 shadow-sm active:scale-95 transition-all" title="Verrouiller">🔒</button>
-            <button onclick="window.openCollabModal()" id="btn-share-mobile" class="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs font-extrabold shadow-md active:scale-95 transition-all">
-                <span>👥</span><span id="btn-share-mobile-count">1</span>
+        <!-- Boutons d'action rapides ( espacés et lisibles sur mobile et tablette ) -->
+        <div class="flex items-center space-x-1.5 sm:space-x-2.5 shrink-0">
+            <div id="header-avatars-stack" class="hidden sm:flex -space-x-1.5 overflow-hidden mr-1"></div>
+            <button id="pwa-install-btn" onclick="window.triggerPwaInstall()" class="hidden px-2.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-sm transition-all items-center space-x-1" title="Installer l'application Londigo (Edge / Chrome)">
+                <span>📲</span><span class="hidden sm:inline">Installer</span>
             </button>
-        </div>
-
-        <!-- Actions Desktop -->
-        <div class="hidden md:flex items-center gap-2.5 shrink-0">
-            <div id="header-avatars-stack" onclick="window.openCollabModal()" class="flex -space-x-1.5 overflow-hidden cursor-pointer mr-1"></div>
-            <button onclick="window.cycleThemeMode()" id="theme-btn-desktop" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-extrabold border border-slate-200 transition-all" title="Basculer Mode Auto (Téléphone) / Jour / Nuit">🌓 Auto</button>
-            <button onclick="window.lockAppNow()" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold border border-slate-200 transition-all" title="Verrouiller le carnet">🔒</button>
-            <button onclick="window.openCollabModal()" id="btn-share-desktop" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold shadow-sm transition-all">👥 Partager</button>
+            <button onclick="window.cycleThemeMode()" class="theme-toggle-btn px-2.5 sm:px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center justify-center" title="Basculer Mode Automatique / Jour / Nuit">🌓</button>
+            <button onclick="window.lockApp()" class="px-2.5 sm:px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center justify-center" title="Verrouiller le carnet">🔒</button>
+            <button onclick="window.openCollabModal()" class="px-3 sm:px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all flex items-center space-x-1.5">
+                <span>👥</span><span class="hidden sm:inline">Partager</span>
+            </button>
         </div>
     </header>
 
-    <!-- CORPS DE L'APPLICATION EN SPLIT-VIEW (CARTES + CARTE LEAFLET) -->
+    <!-- CORPS DE L'APPLICATION EN SPLIT-VIEW (CARTES AIRBNB + CARTE LEAFLET) -->
     <div class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
-        <!-- Panneau Cartes -->
-        <div id="main-content-panel" class="w-full md:w-[58%] lg:w-[55%] h-[60%] md:h-full overflow-y-auto p-4 md:p-6 pb-32 md:pb-28 space-y-4 bg-slate-100/70 z-10 order-2 md:order-1"></div>
+        <!-- Panneau Cartes (avec padding-bottom généreux pour le dock flottant) -->
+        <div id="main-content-panel" class="w-full md:w-[60%] lg:w-[55%] h-[58%] md:h-full overflow-y-auto p-3.5 sm:p-5 md:p-6 pb-28 md:pb-28 space-y-4 bg-slate-100/70 z-10 order-2 md:order-1"></div>
 
         <!-- Panneau Carte Leaflet -->
-        <div class="w-full md:w-[42%] lg:w-[45%] h-[40%] md:h-full relative order-1 md:order-2 shrink-0 border-l border-slate-200 shadow-inner">
+        <div class="w-full md:w-[40%] lg:w-[45%] h-[42%] md:h-full relative order-1 md:order-2 shrink-0 border-l border-slate-200 shadow-inner">
             <div id="map" class="w-full h-full z-10"></div>
             
             <div class="absolute top-3 right-3 z-30 flex items-center space-x-1.5 bg-white/90 backdrop-blur-md p-1 rounded-2xl shadow-lg border border-white">
@@ -390,186 +352,188 @@
         </div>
     </div>
 
-    <!-- BARRE DE NAVIGATION FLOTTANTE UX MODERNE (SMARTPHONE, TABLETTE & DESKTOP) -->
-    <nav aria-label="Navigation principale" class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-lg liquid-glass rounded-3xl p-1 sm:p-1.5 shadow-2xl border border-slate-200/90 flex items-center justify-between gap-0.5 sm:gap-1 overflow-hidden">
-        <button onclick="window.switchTab('transit')" id="tab-btn-transit" class="flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-2xl text-[9.5px] sm:text-[11px] font-extrabold bg-blue-600 text-white shadow-md transition-all">
+    <!-- BARRE DE NAVIGATION FLOTTANTE UX MODERNE (APPLE LIQUID GLASS TRANSLUCIDE) -->
+    <nav aria-label="Navigation principale" class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-lg apple-liquid-dock rounded-[28px] p-1 sm:p-1.5 flex items-center justify-between gap-0.5 sm:gap-1 overflow-hidden">
+        <button onclick="window.switchTab('transit')" id="tab-btn-transit" class="flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-[22px] text-[9.5px] sm:text-[11px] font-extrabold apple-tab-active transition-all">
             <span class="text-base sm:text-lg leading-none mb-0.5 sm:mb-1">🚄</span>
             <span class="truncate w-full text-center"><span class="sm:hidden">Trajets</span><span class="hidden sm:inline">Trajets BE⇄GB</span></span>
         </button>
-        <button onclick="window.switchTab('days')" id="tab-btn-days" class="flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-2xl text-[9.5px] sm:text-[11px] font-bold text-slate-600 hover:bg-slate-100/80 transition-all">
+        <button onclick="window.switchTab('days')" id="tab-btn-days" class="flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-[22px] text-[9.5px] sm:text-[11px] font-bold apple-tab-inactive transition-all">
             <span class="text-base sm:text-lg leading-none mb-0.5 sm:mb-1">📅</span>
             <span class="truncate w-full text-center"><span class="sm:hidden">Séjour</span><span class="hidden sm:inline">Jours Séjour</span></span>
         </button>
-        <button onclick="window.switchTab('hotspots')" id="tab-btn-hotspots" class="flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-2xl text-[9.5px] sm:text-[11px] font-bold text-slate-600 hover:bg-slate-100/80 transition-all">
+        <button onclick="window.switchTab('hotspots')" id="tab-btn-hotspots" class="flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-[22px] text-[9.5px] sm:text-[11px] font-bold apple-tab-inactive transition-all">
             <span class="text-base sm:text-lg leading-none mb-0.5 sm:mb-1">🍴</span>
             <span class="truncate w-full text-center"><span class="sm:hidden">Restos</span><span class="hidden sm:inline">Pépites & Restos</span></span>
         </button>
-        <button onclick="window.switchTab('photos')" id="tab-btn-photos" class="flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-2xl text-[9.5px] sm:text-[11px] font-bold text-slate-600 hover:bg-slate-100/80 transition-all">
+        <button onclick="window.switchTab('photos')" id="tab-btn-photos" class="flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-[22px] text-[9.5px] sm:text-[11px] font-bold apple-tab-inactive transition-all">
             <span class="text-base sm:text-lg leading-none mb-0.5 sm:mb-1">📸</span>
             <span class="truncate w-full text-center"><span class="sm:hidden">Photos</span><span class="hidden sm:inline">Spots Photos</span></span>
         </button>
-        <button onclick="window.switchTab('checklist')" id="tab-btn-checklist" class="flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-2xl text-[9.5px] sm:text-[11px] font-bold text-slate-600 hover:bg-slate-100/80 transition-all">
+        <button onclick="window.switchTab('checklist')" id="tab-btn-checklist" class="flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-[22px] text-[9.5px] sm:text-[11px] font-bold apple-tab-inactive transition-all">
             <span class="text-base sm:text-lg leading-none mb-0.5 sm:mb-1">🧳</span>
             <span class="truncate w-full text-center"><span class="sm:hidden">Bagages</span><span class="hidden sm:inline">Bagages & Check</span></span>
         </button>
     </nav>
 
     <!-- TOAST BANNER -->
-    <div id="toast-banner" class="fixed top-4 left-1/2 -translate-x-1/2 z-[80] hidden items-center space-x-2.5 bg-slate-900/95 text-white px-4 py-2.5 rounded-2xl shadow-2xl border border-white/15 text-xs font-semibold transition-all">
+    <div id="toast-banner" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 hidden items-center space-x-2.5 bg-slate-900/95 text-white px-4 py-2.5 rounded-2xl shadow-2xl border border-white/15 text-xs font-semibold transition-all">
         <span id="toast-text">Notification</span>
     </div>
 
     <script>
-        // --- ÉTAT GLOBAL & STOCKAGE LOCAL ---
-        const urlParams = new URLSearchParams(window.location.search);
-        var currentRoomId = (urlParams.get('voyage') || 'londres-2026-partage').replace(/[^a-zA-Z0-9_-]/g, '_');
-        if (!urlParams.get('voyage')) {
-            try {
-                const newUrl = new URL(window.location.href);
-                newUrl.searchParams.set('voyage', currentRoomId);
-                window.history.replaceState({}, '', newUrl.toString());
-            } catch (e) {}
+        // --- SYSTÈME DE THÈME AUTOMATIQUE JOUR / NUIT ---
+        var themePreference = localStorage.getItem('london2026_theme_pref_v6') || 'system';
+        var darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function applyCurrentTheme() {
+            const isSystemDark = darkMediaQuery.matches;
+            const shouldBeDark = themePreference === 'dark' || (themePreference === 'system' && isSystemDark);
+            const root = document.documentElement;
+            if (shouldBeDark) {
+                root.classList.add('dark');
+            } else {
+                root.classList.remove('dark');
+            }
+            const metaTheme = document.querySelector('meta[name="theme-color"]');
+            if (metaTheme) {
+                metaTheme.setAttribute('content', shouldBeDark ? '#0b1120' : '#2563eb');
+            }
+            updateThemeButtonsUI(shouldBeDark);
         }
 
+        function updateThemeButtonsUI(isDarkNow) {
+            const btns = document.querySelectorAll('.theme-toggle-btn');
+            btns.forEach(btn => {
+                if (themePreference === 'system') {
+                    btn.innerHTML = isDarkNow ? '🌓 <span class="hidden sm:inline ml-1">Auto</span>' : '🌓 <span class="hidden sm:inline ml-1">Auto</span>';
+                    btn.title = "Synchronisé automatiquement avec le mode Jour/Sombre du téléphone (Cliquer pour forcer)";
+                } else if (themePreference === 'dark') {
+                    btn.innerHTML = '🌙 <span class="hidden sm:inline ml-1">Nuit</span>';
+                    btn.title = "Mode Sombre forcé";
+                } else {
+                    btn.innerHTML = '☀️ <span class="hidden sm:inline ml-1">Jour</span>';
+                    btn.title = "Mode Jour forcé";
+                }
+            });
+        }
+
+        window.cycleThemeMode = function() {
+            if (themePreference === 'system') {
+                themePreference = darkMediaQuery.matches ? 'light' : 'dark';
+            } else if (themePreference === 'dark') {
+                themePreference = 'light';
+            } else {
+                themePreference = 'system';
+            }
+            localStorage.setItem('london2026_theme_pref_v6', themePreference);
+            applyCurrentTheme();
+            const label = themePreference === 'system'
+                ? '🌓 Mode Automatique (suit le téléphone)'
+                : (themePreference === 'dark' ? '🌙 Mode Sombre activé' : '☀️ Mode Jour activé');
+            if (typeof window.showToast === 'function') window.showToast(label);
+        };
+
+        if (darkMediaQuery.addEventListener) {
+            darkMediaQuery.addEventListener('change', () => {
+                if (themePreference === 'system') {
+                    applyCurrentTheme();
+                    if (typeof window.showToast === 'function') {
+                        window.showToast(darkMediaQuery.matches ? '🌙 Bascule auto en Mode Sombre' : '☀️ Bascule auto en Mode Jour');
+                    }
+                }
+            });
+        } else if (darkMediaQuery.addListener) {
+            darkMediaQuery.addListener(() => {
+                if (themePreference === 'system') applyCurrentTheme();
+            });
+        }
+        applyCurrentTheme();
+
+        // --- ÉTAT GLOBAL DE L'APPLICATION ---
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.get('voyage') && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
+            try {
+                const newUrl = window.location.pathname + '?voyage=londres-2026-partage' + window.location.hash;
+                window.history.replaceState({}, '', newUrl);
+            } catch (err) {
+                // Ignoré dans les environnements sandbox / blob:
+            }
+        }
+        var currentRoomId = urlParams.get('voyage') || 'londres-2026-partage';
         var myProfile = JSON.parse(localStorage.getItem('london2026_my_profile_v6') || 'null');
         var doneActivities = JSON.parse(localStorage.getItem('london2026_done_v6') || 'null');
         var baggageState = JSON.parse(localStorage.getItem('london2026_baggage_v6') || '{}');
-        var remindersMap = JSON.parse(localStorage.getItem('london2026_reminders_v6') || '{}');
-        var testedHotspots = JSON.parse(localStorage.getItem('london2026_tested_v6') || '{}');
-        var favHotspots = JSON.parse(localStorage.getItem('london2026_fav_v6') || '{}');
-        var donePhotos = JSON.parse(localStorage.getItem('london2026_photos_v6') || '{}');
+        var remindersState = JSON.parse(localStorage.getItem('london2026_reminders_v6') || '{}');
         var stepNotes = JSON.parse(localStorage.getItem('london2026_notes_v6') || '{}');
         var sharedExpenses = JSON.parse(localStorage.getItem('london2026_expenses_v6') || '[]');
         var participantsMap = JSON.parse(localStorage.getItem('london2026_participants_v6') || '{}');
         var isAppUnlocked = localStorage.getItem('london2026_unlocked_v6') === 'true';
 
-        // --- GESTION DU MODE SOMBRE / JOUR AUTOMATIQUE SELON LE TÉLÉPHONE ---
-        var themePreference = localStorage.getItem('london2026_theme_pref_v6') || 'auto'; // 'auto' | 'dark' | 'light'
-        var systemDarkQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-
-        function applyCurrentTheme(announce) {
-            const isSystemDark = systemDarkQuery ? systemDarkQuery.matches : false;
-            const shouldUseDark = themePreference === 'dark' || (themePreference === 'auto' && isSystemDark);
-
-            const root = document.documentElement;
-            if (shouldUseDark) {
-                root.classList.add('dark');
-            } else {
-                root.classList.remove('dark');
-            }
-
-            const metaTheme = document.getElementById('meta-theme-color');
-            if (metaTheme) {
-                metaTheme.setAttribute('content', shouldUseDark ? '#0b1120' : '#2563eb');
-            }
-
-            const labelDesktop = themePreference === 'auto'
-                ? `🌓 Auto (${isSystemDark ? 'Nuit' : 'Jour'})`
-                : (themePreference === 'dark' ? '🌙 Nuit' : '☀️ Jour');
-            const labelMobile = themePreference === 'auto'
-                ? '🌓'
-                : (themePreference === 'dark' ? '🌙' : '☀️');
-
-            const btnMobile = document.getElementById('theme-btn-mobile');
-            const btnDesktop = document.getElementById('theme-btn-desktop');
-            if (btnMobile) btnMobile.textContent = labelMobile;
-            if (btnDesktop) btnDesktop.textContent = labelDesktop;
-
-            if (announce && typeof window.showToast === 'function') {
-                window.showToast(`Affichage : ${labelDesktop}`);
-            }
-        }
-
-        window.cycleThemeMode = function() {
-            if (themePreference === 'auto') themePreference = 'dark';
-            else if (themePreference === 'dark') themePreference = 'light';
-            else themePreference = 'auto';
-            localStorage.setItem('london2026_theme_pref_v6', themePreference);
-            applyCurrentTheme(true);
-        };
-
-        if (systemDarkQuery) {
-            const onSystemThemeChange = (e) => {
-                if (themePreference === 'auto') {
-                    applyCurrentTheme(false);
-                    if (typeof window.showToast === 'function') {
-                        window.showToast(e.matches ? '🌙 Mode sombre du téléphone détecté' : '☀️ Mode jour du téléphone détecté');
-                    }
-                }
-            };
-            if (typeof systemDarkQuery.addEventListener === 'function') {
-                systemDarkQuery.addEventListener('change', onSystemThemeChange);
-            } else if (typeof systemDarkQuery.addListener === 'function') {
-                systemDarkQuery.addListener(onSystemThemeChange);
-            }
-        }
-
-        applyCurrentTheme(false);
-
         var currentMainTab = 'transit';
         var activeDayIndex = 1;
-        var activeHotspotDayFilter = 1;
-        var activePhotoDayFilter = 1;
-        var highlightedCardId = null;
-        var checklistActiveSubTab = 'baggage';
-        var currentModalActivityId = null;
+        var activeHotspotDayFilter = 1; // 1..4 ou 'all'
+        var activePhotoDayFilter = 1;   // 1..4 ou 'all'
+        var checklistActiveSubTab = 'baggage'; // 'baggage' ou 'tasks'
 
-        // --- CHECK-LIST EXPLICITE DES BAGAGES (VALISE 25KG, TROLLEY CABINE & 2 SACS À DOS) ---
+        // --- CHECK-LIST BAGAGES EXPLICITE (CALIBRÉE POUR VOS 4 BAGAGES) ---
         const baggageChecklistData = [
             {
-                id: "bag-pockets",
-                cat: "⌚ Sur Soi & Poches Zippées (Anti-Pickpocket Londres)",
-                subtitle: "Guidage au poignet pour ne jamais sortir les téléphones dans la rue",
-                items: [
-                    "2 Passeports biométriques valides",
-                    "Smartphones : Pixel 11 Pro & iPhone 17 Pro (roaming activé, gardés en poche zippée)",
-                    "Montres Samsung : Galaxy Watch 8 Classic (46mm) & Galaxy Watch 8 (44mm gris)",
-                    "Montres Apple : Apple Watch SE 2 (44mm) & Apple Watch SE 3 (44mm bleu)",
-                    "Cartes bancaires physiques (Visa / Mastercard) en secours (Londres 100% cashless)"
-                ]
-            },
-            {
                 id: "bag-backpacks",
-                cat: "🎒 2 Sacs à dos (1 rétractable + 1 fixe — Cabine Eurostar & Journée)",
-                subtitle: "Gardés avec vous dans le train (batteries interdites en soute)",
+                cat: "🎒 Dans les 2 Sacs à dos (1 rétractable + 1 fixe) & Sur Soi",
+                subtitle: "À garder avec vous dans l'Eurostar et en journée",
                 items: [
-                    "Billets Eurostar (Aller V.16 Sièges 33-34 / Retour V.12 Sièges 78-77)",
-                    "Billets SNCB Charleroi-Central ⇄ Bruxelles-Midi + Titres LeTEC Bus 13",
-                    "2 Batteries externes (Powerbanks 10 000+ mAh) + 2 câbles USB-C courts",
-                    "2 Tablettes iPad Air + câbles USB-C (pour le train, laissées à l'Airbnb la journée)",
-                    "Écouteurs / Buds / AirPods pour l'Eurostar",
-                    "[Par personne] 1 Parapluie pliant solide et compact",
-                    "1 Tote bag pliable (pour les courses d'appoint à King's Cross)"
+                    "[Sur soi] Les 2 Passeports biométriques valides",
+                    "[Sur soi] Billets Eurostar (Aller V.16 Sièges 33-34 / Retour V.12 Sièges 78-77)",
+                    "[Sur soi] Billets SNCB Charleroi-Central ⇄ Bruxelles-Midi + Titres LeTEC Bus 13",
+                    "[Sur soi] Cartes bancaires physiques en secours + Roaming activé",
+                    "[En poche zippée] Les 2 Pixel 11 Pro & les 2 iPhone 17 Pro",
+                    "[Au poignet] Les 2 Smartwatches (Galaxy Watch 8 & Apple Watch) pour guidage GPS & métro",
+                    "[Sac à dos] 2 Batteries externes (Powerbanks 10 000+ mAh - interdites en soute) + 2 câbles courts",
+                    "[Sac à dos] Les 2 tablettes iPad Air (pour le train, puis laissées à l'Airbnb)",
+                    "[Sac à dos] Écouteurs / casques audio pour l'Eurostar"
                 ]
             },
             {
                 id: "bag-trolley",
-                cat: "🧳 Petit Trolley Cabine",
-                subtitle: "Vêtements légers et console portable protégée",
+                cat: "🧳 Dans le Petit Trolley Cabine",
+                subtitle: "Vêtements légers, pluie & console de jeu",
                 items: [
-                    "Console portable choisie (ROG Ally X ou Switch 2) + chargeur 65W USB-C",
-                    "[Par personne] 4 T-shirts / sous-couches respirantes (principe de l'oignon)",
-                    "[Par personne] 2 Pulls légers, cardigans ou sweats zippés (métro chaud)",
-                    "[Par personne] 5 Paires de chaussettes de marche & 4-5 sous-vêtements",
-                    "[Par personne] 1 Bonnet fin & 1 écharpe légère (vent sur la Tamise)"
+                    "[En commun] 1 Console portable (ROG Ally X ou Switch 2) dans sa housse",
+                    "[Par personne] 4 t-shirts ou sous-couches respirantes",
+                    "[Par personne] 2 pulls légers, cardigans ou sweats zippés",
+                    "[Par personne] 5 paires de chaussettes de marche & 4-5 sous-vêtements",
+                    "[Par personne] 1 bonnet fin + 1 écharpe légère",
+                    "[Par personne] 1 parapluie pliant solide et compact",
+                    "[En commun] 1 tote bag pliable (pour courses d'appoint à King's Cross)"
                 ]
             },
             {
                 id: "bag-suitcase25",
-                cat: "🛅 Grande Valise 25 kg (Vêtements, Soirées, Tech & Santé)",
-                subtitle: "Déposée à l'Airbnb au 189 King's Cross Road",
+                cat: "🧳 Dans la Grande Valise 25 kg",
+                subtitle: "Gros volume : vêtements, chaussures, tenues de soirée & trousse santé",
                 items: [
-                    "[Par personne] 2 à 3 Pantalons ou jeans confortables pour marcher 15-20 km/jour",
-                    "[Par personne] 2 Paires de baskets de marche déperlantes (pour alterner)",
-                    "[Par personne] 1 Veste chaude déperlante à capuche",
-                    "[Par personne - Soirée Restos/Bars] 1 Tenue chic (pantalon habillé/chino + chemise ou maille fine)",
-                    "[Par personne - Soirée] 1 Manteau de ville élégant + chaussures soignées",
-                    "[Par personne] 1 Pyjama confortable + chaussons ou grosses chaussettes",
-                    "[En commun] 1 Multiprise belge compacte + 1 ou 2 adaptateurs secteur UK (Type G)",
-                    "[En commun] 1 Chargeur secteur GaN multi-ports USB-C (65W–100W)",
-                    "[En commun] 2 Stations de voyage pliantes 3-en-1 Qi2",
-                    "[En commun] 1 Câble galet magnétique officiel Apple Watch (USB-C) + 1 galet Samsung Watch",
-                    "[En commun] Trousse de toilette + Pansements Compeed + Paracétamol + Baume lèvres"
+                    "[Par personne] 2 à 3 pantalons ou jeans confortables pour marcher",
+                    "[Par personne] 2 paires de baskets de marche déperlantes (pour alterner chaque jour)",
+                    "[Par personne] 1 veste chaude déperlante / coupe-vent avec capuche",
+                    "[Par personne - Soirée] 1 tenue habillée (pantalon chic/chino + chemise ou pull maille fine)",
+                    "[Par personne - Soirée] 1 manteau de ville élégant + chaussures soignées",
+                    "[Par personne - Nuit] 1 pyjama confortable + 1 paire de chaussons / grosses chaussettes",
+                    "[En commun] Trousse de toilette complète",
+                    "[En commun] Pharmacie : Pansements anti-ampoules Compeed, Paracétamol, pastilles gorge, baume lèvres"
+                ]
+            },
+            {
+                id: "bag-tech",
+                cat: "🔌 Station de Charge Airbnb (Dans la Grande Valise 25 kg)",
+                subtitle: "Tout votre système électrique sur une seule prise anglaise",
+                items: [
+                    "[En commun] 1 ou 2 Adaptateurs secteur UK (Type G à 3 broches plates)",
+                    "[En commun] 1 Multiprise belge compacte (3 ou 4 prises)",
+                    "[En commun] 1 Chargeur secteur GaN multi-ports USB-C (65W–100W) pour la console et les iPad",
+                    "[En commun] Vos 2 Stations de voyage pliantes 3-en-1 Qi2 (téléphones, écouteurs & Galaxy Watch)",
+                    "[En commun] 1 Câble galet magnétique officiel Apple Watch (USB-C) — indispensable pour les SE 2/SE 3",
+                    "[En commun] 1 Galet de charge Samsung Watch de secours + câbles USB-C"
                 ]
             }
         ];
@@ -577,18 +541,19 @@
         const brandLogos = {
             gyg: `<span class="flex items-center space-x-1.5"><span class="w-2 h-2 rounded-full bg-[#FF5533]"></span><span class="text-[10px] font-extrabold tracking-tight text-[#FF5533]">GetYourGuide</span></span>`,
             official: `<span class="flex items-center space-x-1.5"><span class="text-[10px] font-extrabold tracking-tight text-blue-600">Site Officiel</span></span>`,
+            thefork: `<span class="flex items-center space-x-1.5"><span class="w-2 h-2 rounded-full bg-[#00665C]"></span><span class="text-[10px] font-extrabold tracking-tight text-[#00665C] dark:text-emerald-300">🍴 TheFork</span></span>`,
             gmapsTimeline: `<svg class="w-3.5 h-3.5 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>`,
-            appleTimeline: `<svg class="w-3.5 h-3.5 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.35c.69-.84 1.15-2.02 1.02-3.2-1 .04-2.21.67-2.92 1.51-.62.72-1.16 1.9-1 3.04 1.12.09 2.24-.56 2.9-1.35z"/></svg>`
+            appleTimeline: `<svg class="w-3.5 h-3.5 text-black dark:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.35c.69-.84 1.15-2.02 1.02-3.2-1 .04-2.21.67-2.92 1.51-.62.72-1.16 1.9-1 3.04 1.12.09 2.24-.56 2.9-1.35z"/></svg>`
         };
 
-        // --- PROGRAMME COMPLET DU SÉJOUR ---
+        // --- DONNÉES COMPLÈTES DU VOYAGE ---
         const tripDays = [
             // TAB 0 : TRAJETS BELGIQUE <-> LONDRES
             {
                 isTransitTab: true,
                 dayShort: "Trajets BE ⇄ GB",
-                dayTitle: "Trajets Belgique ⇄ Londres & Horaires",
-                daySubtitle: "Départ et retour : Rue de Villers 181, 6010 Couillet • Arrêt TEC Couillet Rue Ferrer (Ligne 13).",
+                dayTitle: "Trajets Belgique ⇄ Londres & Checklist Complète",
+                daySubtitle: "Départ et retour exacts : Rue de Villers 181, 6010 Couillet • Arrêt TEC Couillet Rue Ferrer (Ligne 13).",
                 routes: [
                     {
                         title: "Aller : Couillet (Rue de Villers 181) → London St Pancras",
@@ -1862,10 +1827,6 @@
         ];
 
         // --- FONCTIONS UTILITAIRES ---
-        function escapeSafeQuote(str) {
-            return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-        }
-
         function getAllActivitiesFlat() {
             const list = [];
             tripDays.forEach((day, dIdx) => {
@@ -1881,13 +1842,14 @@
         function getAllBaggageItemsFlat() {
             const items = [];
             baggageChecklistData.forEach(group => {
-                group.items.forEach((label, idx) => items.push({ key: `${group.id}__${idx}`, label }));
+                group.items.forEach((label, idx) => items.push({ key: `${group.id}__${idx}`, label, groupId: group.id, itemIdx: idx }));
             });
             return items;
         }
 
         function isBaggageItemChecked(key, label) {
-            return !!(baggageState && (baggageState[key] || baggageState[label]));
+            if (!baggageState || typeof baggageState !== 'object') return false;
+            return baggageState[key] === true || (label ? baggageState[label] === true : false);
         }
 
         if (!doneActivities || typeof doneActivities !== 'object' || Array.isArray(doneActivities)) {
@@ -1897,45 +1859,30 @@
         }
 
         function isActivityDone(id) { return !!(doneActivities && doneActivities[id]); }
-        function isHotspotTested(id) { return !!(testedHotspots && testedHotspots[id]); }
-        function isHotspotFav(id) { return !!(favHotspots && favHotspots[id]); }
-        function isPhotoDone(id) { return !!(donePhotos && donePhotos[id]); }
 
         function saveLocalState() {
             localStorage.setItem('london2026_done_v6', JSON.stringify(doneActivities));
             localStorage.setItem('london2026_baggage_v6', JSON.stringify(baggageState));
-            localStorage.setItem('london2026_reminders_v6', JSON.stringify(remindersMap));
-            localStorage.setItem('london2026_tested_v6', JSON.stringify(testedHotspots));
-            localStorage.setItem('london2026_fav_v6', JSON.stringify(favHotspots));
-            localStorage.setItem('london2026_photos_v6', JSON.stringify(donePhotos));
+            localStorage.setItem('london2026_reminders_v6', JSON.stringify(remindersState));
             localStorage.setItem('london2026_notes_v6', JSON.stringify(stepNotes));
             localStorage.setItem('london2026_expenses_v6', JSON.stringify(sharedExpenses));
             localStorage.setItem('london2026_participants_v6', JSON.stringify(participantsMap));
-            updateGlobalProgressBadge();
         }
 
         function pushCloudPatch(actionLabel) {
             saveLocalState();
             updateCollabHeaderUI();
-            if (typeof window.pushFirebaseRoomState === 'function') {
-                window.pushFirebaseRoomState(actionLabel);
+            if (typeof window.syncStateToFirebase === 'function') {
+                window.syncStateToFirebase(actionLabel);
             }
         }
 
-        function updateGlobalProgressBadge() {
-            const allActs = getAllActivitiesFlat();
-            const doneActsCount = allActs.filter(a => isActivityDone(a.id)).length;
-            const pct = allActs.length ? Math.round((doneActsCount / allActs.length) * 100) : 0;
-            const badge = document.getElementById('global-progress-badge');
-            if (badge) badge.textContent = `${pct}% validé`;
-        }
-
-        // --- SYSTÈME DE CODE PIN SECRET (1712 SANS INDICE) ---
+        // --- ACCÈS SÉCURISÉ PAR CODE PIN (1712 SANS INDICE) ---
         window.appendPinDigit = function(digit) {
             const input = document.getElementById('pin-input');
             const error = document.getElementById('pin-error');
-            if (error) error.classList.add('hidden');
             if (!input) return;
+            if (error) error.classList.add('hidden');
             if (input.value.length < 4) {
                 input.value += String(digit);
             }
@@ -1944,229 +1891,157 @@
             }
         };
 
-        window.clearPinInput = function() {
+        window.clearPinDigits = function() {
             const input = document.getElementById('pin-input');
             const error = document.getElementById('pin-error');
-            if (input) {
-                input.value = '';
-                input.focus();
-            }
+            if (input) input.value = '';
             if (error) error.classList.add('hidden');
+            if (input) input.focus();
         };
 
         window.checkPinCode = function() {
             const input = document.getElementById('pin-input');
             const error = document.getElementById('pin-error');
             const modal = document.getElementById('auth-modal');
-            if (!input) return;
-            const val = input.value.trim();
+            if (!input || !modal) return;
 
+            const val = input.value.trim();
             if (val === '1712') {
                 localStorage.setItem('london2026_unlocked_v6', 'true');
                 isAppUnlocked = true;
                 if (error) error.classList.add('hidden');
-                if (modal) {
-                    modal.classList.add('opacity-0', 'pointer-events-none');
-                    setTimeout(() => {
-                        modal.classList.add('hidden');
-                        ensureUserOnboarding();
-                        celebrateSuccess("🔓 Carnet Londigo déverrouillé !");
-                        requestNotificationPermissionSoft();
-                    }, 220);
-                }
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    celebrateSuccess("🔓 Carnet déverrouillé ! Bienvenue dans Londigo !");
+                    ensureUserOnboarding();
+                    if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                        try { Notification.requestPermission(); } catch (e) {}
+                    }
+                }, 250);
             } else {
                 if (error) error.classList.remove('hidden');
                 input.value = '';
                 input.classList.add('border-rose-500', 'bg-rose-50');
-                setTimeout(() => input.classList.remove('border-rose-500', 'bg-rose-50'), 900);
+                setTimeout(() => {
+                    input.classList.remove('border-rose-500', 'bg-rose-50');
+                    input.focus();
+                }, 800);
             }
         };
 
-        window.lockAppNow = function() {
+        window.lockApp = function() {
             localStorage.setItem('london2026_unlocked_v6', 'false');
             isAppUnlocked = false;
-            window.closeCollabModal();
             const modal = document.getElementById('auth-modal');
             const input = document.getElementById('pin-input');
+            const error = document.getElementById('pin-error');
+            if (error) error.classList.add('hidden');
             if (input) input.value = '';
             if (modal) {
                 modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+                modal.classList.add('flex');
             }
+            if (input) setTimeout(() => input.focus(), 100);
         };
 
-        // --- INSTALLATION PWA (MICROSOFT EDGE / CHROME / MOBILE) ---
-        var deferredPwaPrompt = null;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPwaPrompt = e;
-            const btn = document.getElementById('btn-pwa-install');
-            if (btn) btn.textContent = "Installer l'App ⬇";
-        });
-
-        window.triggerPwaInstall = async function() {
-            if (deferredPwaPrompt) {
-                deferredPwaPrompt.prompt();
-                await deferredPwaPrompt.userChoice;
-                deferredPwaPrompt = null;
-            } else {
-                window.showToast("💡 Dans Microsoft Edge : cliquez sur l'icône [+] dans la barre d'adresse ou Menu (•••) > Applications > Installer ce site en tant qu'application.");
-            }
-        };
-
-        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
-            const swCode = `
-                self.addEventListener('install', e => self.skipWaiting());
-                self.addEventListener('activate', e => self.clients.claim());
-                self.addEventListener('fetch', e => {});
-            `;
-            try {
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
-            } catch (e) {}
-        }
-
-        // --- FÉLICITATIONS & NOTIFICATIONS HORAIRES ---
+        // --- SYSTÈME DE FÉLICITATIONS & NOTIFICATIONS HORAIRES ---
         function celebrateSuccess(message) {
             if (typeof confetti === 'function') {
                 confetti({ particleCount: 95, spread: 75, origin: { y: 0.65 }, zIndex: 9999 });
             }
-            window.showToast(message || "🎉 Bravo ! Étape validée !");
-            playChime(true);
+            playMelody([587.33, 880]);
+            window.showToast(message);
         }
 
-        function requestNotificationPermissionSoft() {
-            if ("Notification" in window && Notification.permission === "default") {
-                try { Notification.requestPermission(); } catch (e) {}
-            }
+        function playMelody(freqs) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                freqs.forEach((f, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = f;
+                    gain.gain.setValueAtTime(0.12, ctx.currentTime + idx * 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (idx + 1) * 0.18);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + idx * 0.12);
+                    osc.stop(ctx.currentTime + (idx + 1) * 0.18);
+                });
+            } catch (e) {}
         }
 
         function triggerNativeNotification(title, body) {
             if ("Notification" in window && Notification.permission === "granted") {
                 try {
-                    new Notification(title, {
-                        body: body,
-                        icon: "https://cdn-icons-png.flaticon.com/512/825/825590.png"
-                    });
+                    new Notification(title, { body: body });
                 } catch (e) {}
             }
         }
 
-        function playChime(isCelebration) {
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(isCelebration ? 660 : 880, ctx.currentTime);
-                if (isCelebration) {
-                    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12);
+        window.toggleStopReminder = function(stopId, stopName, startTime, dateStr) {
+            const current = remindersState[stopId];
+            if (!current || !current.enabled) {
+                remindersState[stopId] = { enabled: true, offsetMinutes: 30, triggered: false, name: stopName, startTime, dateStr };
+                window.showToast(`🔔 Rappel activé (30 min avant ${startTime}) pour : ${stopName}`);
+                playMelody([660]);
+                if ("Notification" in window && Notification.permission !== "granted") {
+                    try { Notification.requestPermission(); } catch (e) {}
                 }
-                gain.gain.setValueAtTime(0.12, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.35);
-            } catch (e) {}
-        }
+            } else if (current.offsetMinutes === 30) {
+                remindersState[stopId].offsetMinutes = 15;
+                remindersState[stopId].triggered = false;
+                window.showToast(`🔔 Rappel ajusté à 15 min avant ${startTime}`);
+            } else if (current.offsetMinutes === 15) {
+                remindersState[stopId].offsetMinutes = 60;
+                remindersState[stopId].triggered = false;
+                window.showToast(`🔔 Rappel ajusté à 1h avant ${startTime}`);
+            } else {
+                delete remindersState[stopId];
+                window.showToast(`🔕 Rappel désactivé pour ${stopName}`);
+            }
+            pushCloudPatch('Rappel modifié');
+            renderAirbnbContent();
+        };
+
+        window.testReminderNotification = function() {
+            playMelody([523.25, 659.25, 783.99]);
+            triggerNativeNotification("🔔 Rappel Londigo", "Votre prochaine étape approche : n'oubliez pas vos passeports et vos montres connectées !");
+            window.showToast("🔔 Alerte test envoyée avec succès !");
+        };
 
         function startReminderEngine() {
             setInterval(() => {
                 if (!isAppUnlocked) return;
                 const now = new Date();
                 const flatActivities = getAllActivitiesFlat();
-                let updated = false;
+                let changed = false;
 
                 flatActivities.forEach(act => {
-                    const rem = remindersMap[act.id];
+                    const rem = remindersState[act.id];
                     if (rem && rem.enabled && !rem.triggered && act.dateStr && act.startTime) {
-                        const target = new Date(`${act.dateStr}T${act.startTime}:00`);
-                        const diffMinutes = (target - now) / 60000;
-                        if (diffMinutes <= rem.offsetMinutes && diffMinutes > -45) {
-                            const msg = `${act.name} prévu à ${act.startTime}`;
-                            triggerNativeNotification("⏰ Rappel Londigo", msg);
-                            window.showToast(`🔔 Rappel : ${msg}`);
-                            playChime(false);
-                            remindersMap[act.id].triggered = true;
-                            updated = true;
+                        const actDate = new Date(`${act.dateStr}T${act.startTime}:00`);
+                        const diffMin = (actDate - now) / 60000;
+                        if (diffMin <= rem.offsetMinutes && diffMin > -45) {
+                            triggerNativeNotification(`🔔 Rappel (${act.startTime}) : ${act.name}`, `Départ prévu dans ${Math.max(0, Math.round(diffMin))} min.`);
+                            window.showToast(`🔔 Rappel ${act.startTime} : ${act.name}`);
+                            playMelody([523.25, 659.25, 783.99]);
+                            remindersState[act.id].triggered = true;
+                            changed = true;
                         }
                     }
                 });
 
-                if (updated) {
+                if (changed) {
                     saveLocalState();
                     renderAirbnbContent();
                 }
             }, 30000);
         }
 
-        // --- GESTION MODAL RAPPEL & NOTE D'ÉTAPE ---
-        window.openStepModal = function(actId) {
-            currentModalActivityId = actId;
-            const act = getAllActivitiesFlat().find(a => a.id === actId);
-            if (!act) return;
-
-            document.getElementById('modal-step-time').textContent = `${act.dayShort} • ${act.time || act.startTime}`;
-            document.getElementById('modal-step-title').textContent = act.name;
-
-            const rem = remindersMap[actId];
-            const select = document.getElementById('modal-reminder-select');
-            select.value = (rem && rem.enabled) ? String(rem.offsetMinutes) : 'none';
-
-            document.getElementById('modal-step-note').value = stepNotes[actId] || '';
-
-            const modal = document.getElementById('step-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        };
-
-        window.closeStepModal = function() {
-            const modal = document.getElementById('step-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        };
-
-        window.saveStepModal = function() {
-            if (!currentModalActivityId) return;
-            const selectVal = document.getElementById('modal-reminder-select').value;
-            const noteVal = document.getElementById('modal-step-note').value.trim();
-
-            if (selectVal === 'none') {
-                delete remindersMap[currentModalActivityId];
-            } else {
-                remindersMap[currentModalActivityId] = {
-                    enabled: true,
-                    offsetMinutes: parseInt(selectVal, 10),
-                    triggered: false
-                };
-                requestNotificationPermissionSoft();
-            }
-
-            if (noteVal) {
-                stepNotes[currentModalActivityId] = noteVal;
-            } else {
-                delete stepNotes[currentModalActivityId];
-            }
-
-            pushCloudPatch('Note / Rappel mis à jour');
-            window.closeStepModal();
-            renderAirbnbContent();
-            window.showToast("💾 Rappel et note enregistrés !");
-        };
-
-        window.testImmediateNotification = function() {
-            const act = getAllActivitiesFlat().find(a => a.id === currentModalActivityId);
-            const title = act ? act.name : "Étape Londres 2026";
-            const time = act ? (act.time || act.startTime) : "Bientôt";
-            requestNotificationPermissionSoft();
-            playChime(false);
-            triggerNativeNotification("🔔 Rappel Londigo", `${title} (${time})`);
-            window.showToast(`🔔 Notification envoyée : ${title}`);
-        };
-
-        // --- ACTIONS CHECKLIST & BAGAGES ---
+        // --- GESTION DES ACTIONS UTILISATEUR (ACTIVITÉS & BAGAGES) ---
         window.toggleActivityDone = function(id) {
             doneActivities[id] = !doneActivities[id];
             pushCloudPatch('Activité mise à jour');
@@ -2178,15 +2053,22 @@
             renderAirbnbContent();
         };
 
-        window.toggleBaggageItem = function(itemKey, itemLabel) {
-            const currentlyChecked = isBaggageItemChecked(itemKey, itemLabel);
-            baggageState[itemKey] = !currentlyChecked;
-            if (itemLabel && itemLabel in baggageState) {
+        window.toggleBaggageByIndex = function(groupId, itemIdx) {
+            const group = baggageChecklistData.find(g => g.id === groupId);
+            if (!group || !group.items[itemIdx]) return;
+            const itemLabel = group.items[itemIdx];
+            const itemKey = `${groupId}__${itemIdx}`;
+            if (!baggageState || typeof baggageState !== 'object' || Array.isArray(baggageState)) {
+                baggageState = {};
+            }
+            const nextVal = !isBaggageItemChecked(itemKey, itemLabel);
+            baggageState[itemKey] = nextVal;
+            if (itemLabel in baggageState) {
                 delete baggageState[itemLabel];
             }
             saveLocalState();
             pushCloudPatch('Bagage coché');
-            if (baggageState[itemKey]) {
+            if (nextVal) {
                 const allItems = getAllBaggageItemsFlat();
                 const doneCount = allItems.filter(i => isBaggageItemChecked(i.key, i.label)).length;
                 if (doneCount === allItems.length) {
@@ -2201,27 +2083,12 @@
         window.resetBaggageChecklist = function() {
             baggageState = {};
             pushCloudPatch('Bagages réinitialisés');
-            renderAirbnbContent();
             window.showToast("🔄 Check-list bagages remise à zéro.");
-        };
-
-        window.toggleHotspotTested = function(id) {
-            testedHotspots[id] = !testedHotspots[id];
-            pushCloudPatch('Pépite testée');
-            if (testedHotspots[id]) celebrateSuccess("🍴 Adresse testée et validée !");
             renderAirbnbContent();
         };
 
-        window.toggleHotspotFav = function(id) {
-            favHotspots[id] = !favHotspots[id];
-            pushCloudPatch('Favori mis à jour');
-            renderAirbnbContent();
-        };
-
-        window.togglePhotoDone = function(id) {
-            donePhotos[id] = !donePhotos[id];
-            pushCloudPatch('Spot photo validé');
-            if (donePhotos[id]) celebrateSuccess("📸 Superbe ! Spot photo capturé !");
+        window.switchChecklistSubTab = function(subTab) {
+            checklistActiveSubTab = subTab;
             renderAirbnbContent();
         };
 
@@ -2232,9 +2099,9 @@
                 const btn = document.getElementById(`tab-btn-${t}`);
                 if (!btn) return;
                 if (t === tabKey) {
-                    btn.className = "flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-2xl text-[9.5px] sm:text-[11px] font-extrabold bg-blue-600 text-white shadow-md transition-all";
+                    btn.className = "flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-[22px] text-[9.5px] sm:text-[11px] font-extrabold apple-tab-active transition-all";
                 } else {
-                    btn.className = "flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-2xl text-[9.5px] sm:text-[11px] font-bold text-slate-600 hover:bg-slate-100/80 transition-all";
+                    btn.className = "flex-1 min-w-0 flex flex-col items-center justify-center py-2 px-0.5 sm:px-1.5 rounded-[22px] text-[9.5px] sm:text-[11px] font-bold apple-tab-inactive transition-all";
                 }
             });
             renderAirbnbContent();
@@ -2250,41 +2117,46 @@
             renderAirbnbContent();
         };
 
-        window.jumpToHotspotFromDay = function(hsId, dayIdx) {
-            activeHotspotDayFilter = dayIdx;
-            highlightedCardId = `hotspot-card-${hsId}`;
+        // Redirection directe depuis Jours du Séjour vers l'onglet Pépites & Restos ou Spots Photos
+        window.navigateToHotspotDetail = function(hsId, dayIdx) {
+            if (dayIdx && dayIdx >= 1 && dayIdx <= 4) {
+                activeHotspotDayFilter = dayIdx;
+            } else {
+                activeHotspotDayFilter = 'all';
+            }
             window.switchTab('hotspots');
             setTimeout(() => {
                 const el = document.getElementById(`hotspot-card-${hsId}`);
                 if (el) {
                     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    el.classList.add('card-focus-ring', 'ring-2', 'ring-purple-500');
+                    el.classList.add('ring-4', 'ring-blue-500', 'card-focus-ring');
+                    setTimeout(() => el.classList.remove('ring-4', 'ring-blue-500', 'card-focus-ring'), 2800);
                 }
             }, 120);
         };
 
-        window.jumpToPhotoFromDay = function(phId, dayIdx) {
-            activePhotoDayFilter = dayIdx;
-            highlightedCardId = `photo-card-${phId}`;
+        window.navigateToPhotoDetail = function(phId, dayIdx) {
+            if (dayIdx && dayIdx >= 1 && dayIdx <= 4) {
+                activePhotoDayFilter = dayIdx;
+            } else {
+                activePhotoDayFilter = 'all';
+            }
             window.switchTab('photos');
             setTimeout(() => {
                 const el = document.getElementById(`photo-card-${phId}`);
                 if (el) {
                     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    el.classList.add('card-focus-ring', 'ring-2', 'ring-pink-500');
+                    el.classList.add('ring-4', 'ring-pink-500', 'card-focus-ring');
+                    setTimeout(() => el.classList.remove('ring-4', 'ring-pink-500', 'card-focus-ring'), 2800);
                 }
             }, 120);
         };
 
-        window.switchChecklistSubTab = function(subTab) {
-            checklistActiveSubTab = subTab;
-            renderAirbnbContent();
-        };
-
-        window.selectDay = function(dIdx) {
-            activeDayIndex = dIdx;
-            renderAirbnbContent();
-        };
+        function getTheForkUrl(hs) {
+            if (hs.forkUrl) return hs.forkUrl;
+            const cleanName = hs.name.replace(/\([^)]*\)/g, '').trim();
+            return `https://www.thefork.co.uk/search?searchText=${encodeURIComponent(cleanName + ' London')}`;
+        }
 
         function getLocParam(stop) {
             if (stop.mapQuery) return encodeURIComponent(stop.mapQuery);
@@ -2294,12 +2166,11 @@
         function renderAirbnbContent() {
             const container = document.getElementById('main-content-panel');
             if (!container) return;
-            updateGlobalProgressBadge();
 
             if (currentMainTab === 'transit') {
                 const transitDay = tripDays[0];
                 container.innerHTML = `
-                    <div class="space-y-4 pb-28">
+                    <div class="space-y-4 pb-20">
                         <div class="liquid-glass rounded-3xl p-5 shadow-sm border border-emerald-200 bg-emerald-50/60">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="text-xs font-extrabold text-emerald-800 uppercase tracking-wider">🏠 Départ & Retour • Couillet 6010</span>
@@ -2326,14 +2197,13 @@
                     </div>
                 `;
                 highlightRoute(transitDay.routes[0]);
-
             } else if (currentMainTab === 'days') {
                 const day = tripDays[activeDayIndex];
                 container.innerHTML = `
-                    <div class="space-y-4 pb-28">
-                        <div class="flex items-center space-x-2 overflow-x-auto pb-1" style="scrollbar-width: none;">
+                    <div class="space-y-4 pb-20">
+                        <div class="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none" style="scrollbar-width: none;">
                             ${[1, 2, 3, 4].map(dIdx => `
-                                <button onclick="window.selectDay(${dIdx})" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold shrink-0 transition-all ${activeDayIndex === dIdx ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
+                                <button onclick="window.selectDayIndex(${dIdx})" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold shrink-0 transition-all ${activeDayIndex === dIdx ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
                                     ${tripDays[dIdx].dayShort}
                                 </button>
                             `).join('')}
@@ -2346,227 +2216,196 @@
                     </div>
                 `;
                 if (day.routes[0]) highlightRoute(day.routes[0]);
-
             } else if (currentMainTab === 'hotspots') {
-                const hotspotDaysIndices = [1, 2, 3, 4];
-                let totalHotspotsCount = 0;
-                const hotspotsByDay = {};
-                hotspotDaysIndices.forEach(dIdx => {
-                    hotspotsByDay[dIdx] = [];
-                    tripDays[dIdx].routes.forEach(r => r.stops.forEach(s => {
+                const dayIndices = activeHotspotDayFilter === 'all' ? [1, 2, 3, 4] : [activeHotspotDayFilter];
+                let displayedMarkers = [];
+
+                const daySectionsHtml = dayIndices.map(dIdx => {
+                    const dayObj = tripDays[dIdx];
+                    let dayHotspots = [];
+                    dayObj.routes.forEach(r => r.stops.forEach(s => {
                         if (s.hotspots) {
                             s.hotspots.forEach(h => {
-                                hotspotsByDay[dIdx].push({ ...h, dayIndex: dIdx, dayShort: tripDays[dIdx].dayShort, dayTitle: tripDays[dIdx].dayTitle, stopName: s.name });
-                                totalHotspotsCount++;
+                                dayHotspots.push({ ...h, stopName: s.name, stopTime: s.time || s.startTime, dayIndex: dIdx });
+                                displayedMarkers.push(h);
                             });
                         }
                     }));
-                });
-
-                const indicesToRender = activeHotspotDayFilter === 'all' ? hotspotDaysIndices : [activeHotspotDayFilter];
-
-                const filteredHotspotsForMap = [];
-                indicesToRender.forEach(dIdx => {
-                    (hotspotsByDay[dIdx] || []).forEach(h => filteredHotspotsForMap.push(h));
-                });
-                if (map && filteredHotspotsForMap.length > 0) {
-                    clearMap();
-                    const boundsArr = [];
-                    filteredHotspotsForMap.forEach(hs => {
-                        boundsArr.push(hs.coords);
-                        const m = L.marker(hs.coords).addTo(map).bindPopup(`<div class="text-xs"><b>🍴 ${hs.name}</b><br><span class="text-purple-700 font-semibold">${hs.category}</span><br><span class="text-slate-500">${hs.dayShort}</span></div>`);
-                        currentMarkers.push(m);
-                    });
-                    if (boundsArr.length > 0) map.fitBounds(boundsArr, { padding: [50, 50], maxZoom: 15 });
-                }
-
-                container.innerHTML = `
-                    <div class="space-y-4 pb-28">
-                        <div class="flex items-center space-x-2 overflow-x-auto pb-1" style="scrollbar-width: none;">
-                            <button onclick="window.selectHotspotDayFilter('all')" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold shrink-0 transition-all ${activeHotspotDayFilter === 'all' ? 'bg-purple-600 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
-                                Tous (${totalHotspotsCount})
-                            </button>
-                            ${hotspotDaysIndices.map(dIdx => `
-                                <button onclick="window.selectHotspotDayFilter(${dIdx})" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold shrink-0 transition-all ${activeHotspotDayFilter === dIdx ? 'bg-purple-600 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
-                                    ${tripDays[dIdx].dayShort} (${hotspotsByDay[dIdx].length})
-                                </button>
-                            `).join('')}
-                        </div>
-
-                        ${indicesToRender.map(dIdx => {
-                            const dayList = hotspotsByDay[dIdx] || [];
-                            if (dayList.length === 0) return '';
-                            return `
-                                <div class="space-y-3">
-                                    <div class="liquid-glass rounded-2xl px-4 py-3 border border-purple-200/80 bg-purple-50/40 flex items-center justify-between">
-                                        <div>
-                                            <span class="text-[10px] font-extrabold uppercase text-purple-700 tracking-wider">📅 ${tripDays[dIdx].dayShort}</span>
-                                            <h3 class="font-extrabold text-sm text-slate-900">${tripDays[dIdx].dayTitle}</h3>
-                                        </div>
-                                        <span class="text-xs font-extrabold text-purple-700 bg-purple-100 px-2.5 py-1 rounded-xl">${dayList.length} adresses</span>
-                                    </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        ${dayList.map(hs => {
-                                            const tested = isHotspotTested(hs.id);
-                                            const fav = isHotspotFav(hs.id);
-                                            const theForkUrl = hs.theForkUrl || `https://www.thefork.co.uk/search?searchText=${encodeURIComponent(hs.name + ' London')}`;
-                                            return `
-                                            <div id="hotspot-card-${hs.id}" class="airbnb-card liquid-glass rounded-3xl p-4 border ${tested ? 'border-emerald-300 bg-emerald-50/40' : 'border-slate-200'} shadow-sm flex flex-col justify-between">
-                                                <div>
-                                                    <div class="flex items-center justify-between gap-1">
-                                                        <span class="text-[9px] font-extrabold uppercase text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">${hs.dayShort} • ${hs.category}</span>
-                                                        <div class="flex items-center space-x-1">
-                                                            <button onclick="window.toggleHotspotFav('${hs.id}')" class="text-xs px-1.5 py-0.5 rounded-lg border ${fav ? 'bg-rose-50 border-rose-200' : 'bg-white border-slate-200'}">${fav ? '❤️' : '🤍'}</button>
-                                                            <button onclick="window.toggleHotspotTested('${hs.id}')" class="text-[10px] font-bold px-2 py-0.5 rounded-lg border ${tested ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-200'}">${tested ? '✓ Testé' : 'À tester'}</button>
-                                                        </div>
-                                                    </div>
-                                                    <h4 class="font-extrabold text-sm text-slate-900 mt-2">${hs.name} <span class="text-xs font-bold text-amber-600">(${hs.rating || '4.6★'})</span></h4>
-                                                    <p class="text-[10px] font-semibold text-slate-400 mt-0.5">📍 Étape : ${hs.stopName}</p>
-                                                    <p class="text-xs text-rose-600 font-semibold mt-1">${hs.vibe}</p>
-                                                    <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">${hs.desc}</p>
+                    if (dayHotspots.length === 0) return '';
+                    return `
+                        <div class="space-y-3">
+                            <div class="liquid-glass rounded-2xl px-4 py-3 border border-slate-200 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <span class="text-[10px] font-extrabold uppercase text-purple-700 bg-purple-100 px-2.5 py-0.5 rounded-full">${dayObj.dayShort}</span>
+                                    <h3 class="font-extrabold text-sm text-slate-900 mt-1">${dayObj.dayTitle}</h3>
+                                </div>
+                                <span class="text-xs font-extrabold text-slate-500">${dayHotspots.length} adresses</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                ${dayHotspots.map(hs => {
+                                    const safeHsName = hs.name.replace(/'/g, "\\'");
+                                    const safeHsCat = hs.category.replace(/'/g, "\\'");
+                                    const forkUrl = getTheForkUrl(hs);
+                                    return `
+                                        <div id="hotspot-card-${hs.id}" class="airbnb-card liquid-glass rounded-3xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between transition-all">
+                                            <div>
+                                                <div class="flex items-center justify-between gap-2">
+                                                    <span class="text-[9px] font-extrabold uppercase text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full truncate">${hs.category}</span>
+                                                    <span class="text-xs font-extrabold text-slate-800 shrink-0">${hs.rating || '4.5★'}</span>
                                                 </div>
-                                                <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
-                                                    <a href="${theForkUrl}" target="_blank" rel="noopener" class="w-full py-2 px-3 rounded-xl bg-[#00643c] hover:bg-[#004f2f] text-white text-xs font-extrabold flex items-center justify-center space-x-1.5 shadow-sm transition-all">
-                                                        <span>🍴</span>
-                                                        <span>Voir & Réserver sur TheFork</span>
-                                                        <span>↗</span>
+                                                <div class="text-[10px] font-bold text-blue-600 mt-1.5">📍 Étape : ${hs.stopName} (${hs.stopTime})</div>
+                                                <h4 class="font-extrabold text-sm text-slate-900 mt-1">${hs.name}</h4>
+                                                <p class="text-xs text-rose-600 font-semibold mt-0.5">${hs.vibe}</p>
+                                                <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">${hs.desc}</p>
+                                            </div>
+                                            <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                                                <!-- Bouton TheFork + Site officiel / TripAdvisor -->
+                                                <div class="grid grid-cols-2 gap-1.5">
+                                                    <a href="${forkUrl}" target="_blank" rel="noopener" class="flex items-center justify-center px-2.5 py-2 rounded-xl border border-emerald-300 bg-emerald-50/70 hover:bg-emerald-100 transition-colors shadow-sm">
+                                                        ${brandLogos.thefork}
                                                     </a>
-                                                    <div class="flex items-center justify-between pt-1">
-                                                        <button onclick="window.centerOnHotspot([${hs.coords}], '${escapeSafeQuote(hs.name)}', '${escapeSafeQuote(hs.category)}')" class="text-xs font-bold text-blue-600 hover:underline">Carte 📍</button>
-                                                        <div class="flex items-center space-x-1.5">
-                                                            ${hs.bookUrl ? `<a href="${hs.bookUrl}" target="_blank" class="text-[11px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-xl">Site Officiel</a>` : ''}
-                                                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hs.name + ' London')}" target="_blank" class="text-[11px] font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl">Maps</a>
-                                                        </div>
-                                                    </div>
+                                                    <a href="${hs.bookUrl || hs.taUrl || forkUrl}" target="_blank" rel="noopener" class="flex items-center justify-center px-2.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-[10px] font-extrabold text-slate-700 transition-colors">
+                                                        🌐 Site / Réserver
+                                                    </a>
+                                                </div>
+                                                <div class="flex items-center justify-between pt-1">
+                                                    <button onclick="window.centerOnHotspot([${hs.coords}], '${safeHsName}', '${safeHsCat}')" class="text-xs font-bold text-blue-600 hover:underline">Voir sur la carte 📍</button>
+                                                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hs.name + ' London')}" target="_blank" class="text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl">Itinéraire</a>
                                                 </div>
                                             </div>
-                                        `}).join('')}
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                container.innerHTML = `
+                    <div class="space-y-4 pb-20">
+                        <!-- Sélecteur de Jours (comme Jours du Séjour) -->
+                        <div class="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none" style="scrollbar-width: none;">
+                            ${[1, 2, 3, 4].map(dIdx => `
+                                <button onclick="window.selectHotspotDayFilter(${dIdx})" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold shrink-0 transition-all ${activeHotspotDayFilter === dIdx ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
+                                    ${tripDays[dIdx].dayShort}
+                                </button>
+                            `).join('')}
+                            <button onclick="window.selectHotspotDayFilter('all')" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold shrink-0 transition-all ${activeHotspotDayFilter === 'all' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
+                                Tous les jours
+                            </button>
+                        </div>
+                        ${daySectionsHtml}
                     </div>
                 `;
-
+                highlightCustomMarkers(displayedMarkers, '🍴');
             } else if (currentMainTab === 'photos') {
-                const photoDaysIndices = [0, 1, 2, 3, 4];
-                let totalPhotosCount = 0;
-                const photosByDay = {};
-                photoDaysIndices.forEach(dIdx => {
-                    photosByDay[dIdx] = [];
-                    tripDays[dIdx].routes.forEach(r => r.stops.forEach(s => {
+                const dayIndices = activePhotoDayFilter === 'all' ? [0, 1, 2, 3, 4] : [activePhotoDayFilter];
+                let displayedPhotoMarkers = [];
+
+                const photoSectionsHtml = dayIndices.map(dIdx => {
+                    const dayObj = tripDays[dIdx];
+                    let dayPhotos = [];
+                    dayObj.routes.forEach(r => r.stops.forEach(s => {
                         if (s.photoSpots) {
                             s.photoSpots.forEach(p => {
-                                photosByDay[dIdx].push({ ...p, dayIndex: dIdx, dayShort: tripDays[dIdx].dayShort, dayTitle: tripDays[dIdx].dayTitle, stopName: s.name });
-                                totalPhotosCount++;
+                                dayPhotos.push({ ...p, stopName: s.name, dayIndex: dIdx });
+                                displayedPhotoMarkers.push(p);
                             });
                         }
                     }));
-                });
-
-                const indicesToRender = activePhotoDayFilter === 'all' ? photoDaysIndices : [activePhotoDayFilter];
-
-                const filteredPhotosForMap = [];
-                indicesToRender.forEach(dIdx => {
-                    (photosByDay[dIdx] || []).forEach(p => filteredPhotosForMap.push(p));
-                });
-                if (map && filteredPhotosForMap.length > 0) {
-                    clearMap();
-                    const boundsArr = [];
-                    filteredPhotosForMap.forEach(ph => {
-                        boundsArr.push(ph.coords);
-                        const m = L.marker(ph.coords).addTo(map).bindPopup(`<div class="text-xs"><b>📸 ${ph.name}</b><br><span class="text-pink-700 font-semibold">⏰ ${ph.bestTime}</span></div>`);
-                        currentMarkers.push(m);
-                    });
-                    if (boundsArr.length > 0) map.fitBounds(boundsArr, { padding: [50, 50], maxZoom: 15 });
-                }
+                    if (dayPhotos.length === 0) return '';
+                    return `
+                        <div class="space-y-3">
+                            <div class="liquid-glass rounded-2xl px-4 py-3 border border-slate-200 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <span class="text-[10px] font-extrabold uppercase text-pink-700 bg-pink-100 px-2.5 py-0.5 rounded-full">${dayObj.dayShort}</span>
+                                    <h3 class="font-extrabold text-sm text-slate-900 mt-1">${dayObj.dayTitle}</h3>
+                                </div>
+                                <span class="text-xs font-extrabold text-slate-500">${dayPhotos.length} spots</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                ${dayPhotos.map(ph => {
+                                    const safePhName = ph.name.replace(/'/g, "\\'");
+                                    return `
+                                        <div id="photo-card-${ph.id}" class="airbnb-card liquid-glass rounded-3xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between transition-all">
+                                            <div>
+                                                <div class="flex items-center justify-between gap-2">
+                                                    <span class="text-[9px] font-extrabold uppercase text-pink-700 bg-pink-100 px-2 py-0.5 rounded-full">⏰ Idéal : ${ph.bestTime}</span>
+                                                    <span class="text-[10px] font-bold text-slate-500 truncate">📍 ${ph.stopName}</span>
+                                                </div>
+                                                <h4 class="font-extrabold text-sm text-slate-900 mt-2">${ph.name}</h4>
+                                                <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">💡 <b>Cadrage :</b> ${ph.angleTip}</p>
+                                            </div>
+                                            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                                <button onclick="window.centerOnPhotoSpot([${ph.coords}], '${safePhName}')" class="text-xs font-bold text-pink-600 hover:underline">Voir sur la carte 📍</button>
+                                                <a href="https://www.google.com/maps/search/?api=1&query=${ph.coords[0]},${ph.coords[1]}" target="_blank" class="text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl">Itinéraire</a>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
 
                 container.innerHTML = `
-                    <div class="space-y-4 pb-28">
-                        <div class="flex items-center space-x-2 overflow-x-auto pb-1" style="scrollbar-width: none;">
-                            <button onclick="window.selectPhotoDayFilter('all')" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold shrink-0 transition-all ${activePhotoDayFilter === 'all' ? 'bg-pink-600 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
-                                Tous (${totalPhotosCount})
-                            </button>
-                            ${photoDaysIndices.map(dIdx => `
-                                <button onclick="window.selectPhotoDayFilter(${dIdx})" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold shrink-0 transition-all ${activePhotoDayFilter === dIdx ? 'bg-pink-600 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
-                                    ${tripDays[dIdx].dayShort} (${photosByDay[dIdx].length})
+                    <div class="space-y-4 pb-20">
+                        <!-- Sélecteur de Jours (comme Jours du Séjour) -->
+                        <div class="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none" style="scrollbar-width: none;">
+                            ${[1, 2, 3, 4].map(dIdx => `
+                                <button onclick="window.selectPhotoDayFilter(${dIdx})" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold shrink-0 transition-all ${activePhotoDayFilter === dIdx ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
+                                    ${tripDays[dIdx].dayShort}
                                 </button>
                             `).join('')}
+                            <button onclick="window.selectPhotoDayFilter(0)" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold shrink-0 transition-all ${activePhotoDayFilter === 0 ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
+                                Trajets BE⇄GB
+                            </button>
+                            <button onclick="window.selectPhotoDayFilter('all')" class="px-4 py-2.5 rounded-2xl text-xs font-extrabold shrink-0 transition-all ${activePhotoDayFilter === 'all' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300'}">
+                                Tous
+                            </button>
                         </div>
-
-                        ${indicesToRender.map(dIdx => {
-                            const dayList = photosByDay[dIdx] || [];
-                            if (dayList.length === 0) return '';
-                            return `
-                                <div class="space-y-3">
-                                    <div class="liquid-glass rounded-2xl px-4 py-3 border border-pink-200/80 bg-pink-50/40 flex items-center justify-between">
-                                        <div>
-                                            <span class="text-[10px] font-extrabold uppercase text-pink-700 tracking-wider">📅 ${tripDays[dIdx].dayShort}</span>
-                                            <h3 class="font-extrabold text-sm text-slate-900">${tripDays[dIdx].dayTitle}</h3>
-                                        </div>
-                                        <span class="text-xs font-extrabold text-pink-700 bg-pink-100 px-2.5 py-1 rounded-xl">${dayList.length} spots</span>
-                                    </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        ${dayList.map(ph => {
-                                            const taken = isPhotoDone(ph.id);
-                                            return `
-                                            <div id="photo-card-${ph.id}" class="airbnb-card liquid-glass rounded-3xl p-4 border ${taken ? 'border-emerald-300 bg-emerald-50/40' : 'border-slate-200'} shadow-sm flex flex-col justify-between">
-                                                <div>
-                                                    <div class="flex items-center justify-between">
-                                                        <span class="text-[9px] font-extrabold uppercase text-pink-700 bg-pink-100 px-2 py-0.5 rounded-full">${ph.dayShort} • ⏰ ${ph.bestTime}</span>
-                                                        <button onclick="window.togglePhotoDone('${ph.id}')" class="text-[10px] font-extrabold px-2.5 py-1 rounded-xl border ${taken ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-pink-700 border-pink-200'}">${taken ? '📷 Pris ✓' : '☐ À prendre'}</button>
-                                                    </div>
-                                                    <h4 class="font-extrabold text-sm text-slate-900 mt-2">${ph.name}</h4>
-                                                    <p class="text-[10px] font-semibold text-slate-400 mt-0.5">📍 Étape : ${ph.stopName}</p>
-                                                    <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">💡 <b>Cadrage :</b> ${ph.angleTip}</p>
-                                                </div>
-                                                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                                                    <button onclick="window.centerOnPhotoSpot([${ph.coords}], '${escapeSafeQuote(ph.name)}')" class="text-xs font-bold text-pink-600 hover:underline">Voir sur la carte 📍</button>
-                                                    <a href="https://www.google.com/maps/search/?api=1&query=${ph.coords[0]},${ph.coords[1]}" target="_blank" class="text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl">Itinéraire</a>
-                                                </div>
-                                            </div>
-                                        `}).join('')}
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
+                        ${photoSectionsHtml}
                     </div>
                 `;
-
+                highlightCustomMarkers(displayedPhotoMarkers, '📸');
             } else if (currentMainTab === 'checklist') {
                 const all = getAllActivitiesFlat();
                 const allBagItems = getAllBaggageItemsFlat();
-                const bagDoneCount = allBagItems.filter(i => isBaggageItemChecked(i.key, i.label)).length;
-                const bagPct = allBagItems.length ? Math.round((bagDoneCount / allBagItems.length) * 100) : 0;
+                const checkedBagCount = allBagItems.filter(i => isBaggageItemChecked(i.key, i.label)).length;
+                const bagPercent = allBagItems.length ? Math.round((checkedBagCount / allBagItems.length) * 100) : 0;
+
+                const doneActCount = all.filter(a => isActivityDone(a.id)).length;
+                const actPercent = all.length ? Math.round((doneActCount / all.length) * 100) : 0;
+
                 const totalExpenses = sharedExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
 
                 const subTabsBar = `
                     <div class="flex items-center space-x-2 bg-slate-200/70 p-1.5 rounded-2xl">
-                        <button onclick="window.switchChecklistSubTab('baggage')" class="flex-1 py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all ${checklistActiveSubTab === 'baggage' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'}">
-                            🧳 Check-list Bagages (${bagDoneCount}/${allBagItems.length})
+                        <button onclick="window.switchChecklistSubTab('baggage')" class="flex-1 py-2.5 px-3 text-xs font-extrabold rounded-xl transition-all ${checklistActiveSubTab === 'baggage' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-700 hover:bg-white/60'}">
+                            🧳 Check-list Bagages (${checkedBagCount}/${allBagItems.length})
                         </button>
-                        <button onclick="window.switchChecklistSubTab('tasks')" class="flex-1 py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all ${checklistActiveSubTab === 'tasks' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'}">
-                            ✅ Programme & 💷 Dépenses
+                        <button onclick="window.switchChecklistSubTab('tasks')" class="flex-1 py-2.5 px-3 text-xs font-extrabold rounded-xl transition-all ${checklistActiveSubTab === 'tasks' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-700 hover:bg-white/60'}">
+                            ✅ Programme & Budget (${doneActCount}/${all.length})
                         </button>
                     </div>
                 `;
 
                 if (checklistActiveSubTab === 'baggage') {
                     container.innerHTML = `
-                        <div class="space-y-4 pb-28">
+                        <div class="space-y-4 pb-20">
                             ${subTabsBar}
                             <div class="liquid-glass rounded-3xl p-5 border border-slate-200 shadow-sm">
                                 <div class="flex items-center justify-between mb-2">
                                     <div>
-                                        <h3 class="font-extrabold text-sm text-slate-900">🧳 Préparation des 4 Bagages (5–8 Nov)</h3>
-                                        <p class="text-[11px] text-slate-500">1 Valise 25 kg • 1 Petit Trolley • 2 Sacs à dos (1 rétractable + 1 fixe)</p>
+                                        <h3 class="font-extrabold text-sm text-slate-900">🧳 Préparation des 4 Bagages (Londres 2026)</h3>
+                                        <p class="text-[11px] text-slate-500">1 Grande Valise 25 kg • 1 Petit Trolley • 2 Sacs à dos</p>
                                     </div>
                                     <button onclick="window.resetBaggageChecklist()" class="text-[11px] font-bold text-rose-600 hover:underline">Réinitialiser</button>
                                 </div>
-                                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden mt-2">
-                                    <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${bagPct}%"></div>
+                                <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden mt-2">
+                                    <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${bagPercent}%"></div>
                                 </div>
-                                <div class="text-[10px] font-bold text-emerald-700 mt-1.5">${bagPct}% des affaires cochées</div>
+                                <div class="text-right text-[10px] font-extrabold text-emerald-700 mt-1">${bagPercent}% complété</div>
                             </div>
 
                             ${baggageChecklistData.map(group => `
@@ -2580,9 +2419,11 @@
                                             const itemKey = `${group.id}__${itemIdx}`;
                                             const checked = isBaggageItemChecked(itemKey, item);
                                             return `
-                                                <div onclick="window.toggleBaggageItem('${itemKey}', '${escapeSafeQuote(item)}')" class="p-3 rounded-2xl border ${checked ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white border-slate-200 hover:border-blue-300'} flex items-start space-x-3 cursor-pointer transition-all">
-                                                    <input type="checkbox" ${checked ? 'checked' : ''} onclick="event.stopPropagation(); window.toggleBaggageItem('${itemKey}', '${escapeSafeQuote(item)}')" class="mt-0.5 w-4 h-4 rounded text-emerald-600 cursor-pointer" />
-                                                    <span class="text-xs font-semibold ${checked ? 'line-through text-slate-400' : 'text-slate-800'}">${item}</span>
+                                                <div onclick="window.toggleBaggageByIndex('${group.id}', ${itemIdx})" class="p-3 rounded-2xl border ${checked ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white border-slate-200 hover:border-blue-300'} flex items-start space-x-3 cursor-pointer transition-all">
+                                                    <div class="mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${checked ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-white border-slate-300 text-transparent'}">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                                    </div>
+                                                    <span class="text-xs font-semibold select-none ${checked ? 'line-through opacity-60 text-slate-400' : 'text-slate-800'}">${item}</span>
                                                 </div>
                                             `;
                                         }).join('')}
@@ -2593,7 +2434,7 @@
                     `;
                 } else {
                     container.innerHTML = `
-                        <div class="space-y-4 pb-28">
+                        <div class="space-y-4 pb-20">
                             ${subTabsBar}
                             <div class="liquid-glass rounded-3xl p-5 border border-slate-200 shadow-sm">
                                 <div class="flex items-center justify-between mb-3">
@@ -2606,7 +2447,7 @@
                                     <button onclick="window.addSharedExpense()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm">Ajouter</button>
                                 </div>
                                 <div class="space-y-2 max-h-48 overflow-y-auto">
-                                    ${sharedExpenses.length === 0 ? '<p class="text-xs text-slate-400 italic">Aucune dépense enregistrée pour le moment.</p>' : sharedExpenses.map(e => `
+                                    ${sharedExpenses.length === 0 ? `<p class="text-xs text-slate-400 italic">Aucune dépense enregistrée pour le moment.</p>` : sharedExpenses.map(e => `
                                         <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 text-xs">
                                             <div><b>${e.title}</b> <span class="text-slate-400">• ${e.payer}</span></div>
                                             <div class="flex items-center space-x-2 font-bold text-emerald-700"><span>£${Number(e.amount).toFixed(2)}</span><button onclick="window.deleteSharedExpense('${e.id}')" class="text-rose-500 font-bold">&times;</button></div>
@@ -2616,20 +2457,23 @@
                             </div>
 
                             <div class="liquid-glass rounded-3xl p-5 border border-slate-200 shadow-sm">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h3 class="font-extrabold text-sm text-slate-900">✅ Checklist des Étapes du Programme</h3>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="font-extrabold text-sm text-slate-900">✅ Progression des Étapes du Séjour</h3>
+                                    <span class="text-xs font-extrabold text-blue-600">${actPercent}%</span>
                                 </div>
-                                <div class="space-y-2 max-h-[420px] overflow-y-auto pr-1">
+                                <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden mb-3">
+                                    <div class="h-full bg-blue-600 transition-all duration-300" style="width: ${actPercent}%"></div>
+                                </div>
+                                <div class="space-y-2 max-h-[380px] overflow-y-auto pr-1">
                                     ${all.map(item => {
                                         const done = isActivityDone(item.id);
                                         return `
-                                            <div class="p-3 rounded-2xl border ${done ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white border-slate-200'} flex items-start space-x-3 transition-colors">
-                                                <input type="checkbox" ${done ? 'checked' : ''} onclick="window.toggleActivityDone('${item.id}')" class="mt-1 w-4 h-4 rounded text-emerald-600 cursor-pointer" />
+                                            <div onclick="window.toggleActivityDone('${item.id}')" class="p-3 rounded-2xl border ${done ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white border-slate-200'} flex items-start space-x-3 transition-colors cursor-pointer">
+                                                <input type="checkbox" ${done ? 'checked' : ''} class="mt-1 w-4 h-4 rounded text-emerald-600 pointer-events-none" />
                                                 <div class="flex-1 min-w-0">
                                                     <div class="text-[10px] font-bold text-blue-600 uppercase mb-0.5">${item.dayShort} • ${item.time || item.startTime}</div>
                                                     <div class="text-xs font-bold ${done ? 'line-through text-slate-400' : 'text-slate-900'}">${item.name}</div>
                                                 </div>
-                                                <button onclick="window.openStepModal('${item.id}')" class="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded-lg">🔔 Rappel</button>
                                             </div>
                                         `;
                                     }).join('')}
@@ -2640,6 +2484,11 @@
                 }
             }
         }
+
+        window.selectDayIndex = function(dIdx) {
+            activeDayIndex = dIdx;
+            renderAirbnbContent();
+        };
 
         function renderStopsList(routes, targetDayIdx) {
             return routes.map((route, rIdx) => `
@@ -2654,16 +2503,17 @@
                     <div class="space-y-3 pt-3 border-t border-slate-100">
                         ${route.stops.map((stop, sIdx) => {
                             const done = isActivityDone(stop.id);
-                            const rem = remindersMap[stop.id];
-                            const note = stepNotes[stop.id];
+                            const rem = remindersState[stop.id];
+                            const hasRem = !!(rem && rem.enabled);
                             
-                            let originParam = sIdx === 0 ? "" : getLocParam(route.stops[sIdx - 1]);
-                            let destParam = getLocParam(stop);
-                            let mode = route.travelMode || 'walking';
-                            let appleFlag = mode === 'transit' ? 'r' : 'w';
+                            const originParam = sIdx === 0 ? "" : getLocParam(route.stops[sIdx - 1]);
+                            const destParam = getLocParam(stop);
+                            const mode = route.travelMode || 'walking';
+                            const appleFlag = mode === 'transit' ? 'r' : 'w';
                             
-                            let gMapsStop = `https://www.google.com/maps/dir/?api=1${originParam ? '&origin=' + originParam : ''}&destination=${destParam}&travelmode=${mode}`;
-                            let appleMapsStop = `https://maps.apple.com/?${originParam ? 'saddr=' + originParam + '&' : ''}daddr=${destParam}&dirflg=${appleFlag}`;
+                            const gMapsStop = `https://www.google.com/maps/dir/?api=1${originParam ? '&origin=' + originParam : ''}&destination=${destParam}&travelmode=${mode}`;
+                            const appleMapsStop = `https://maps.apple.com/?${originParam ? 'saddr=' + originParam + '&' : ''}daddr=${destParam}&dirflg=${appleFlag}`;
+                            const safeStopName = stop.name.replace(/'/g, "\\'");
                             
                             let ticketHtml = '';
                             if (stop.links) {
@@ -2681,15 +2531,14 @@
                             let inLinePeps = '';
                             if (stop.hotspots && stop.hotspots.length > 0) {
                                 inLinePeps = `
-                                    <div class="mt-2.5 pt-2 border-t border-purple-100 space-y-1.5">
-                                        <span class="text-[9px] font-extrabold uppercase text-purple-600 tracking-wider block">🍴 Pépites & Restos liés (cliquez pour ouvrir) :</span>
+                                    <div class="mt-2 pt-2 border-t border-purple-100 space-y-1.5">
                                         ${stop.hotspots.map(hs => `
-                                            <div onclick="window.jumpToHotspotFromDay('${hs.id}', ${targetDayIdx})" class="p-2 rounded-xl bg-purple-50/70 hover:bg-purple-100/80 border border-purple-200/70 cursor-pointer transition-all flex items-center justify-between gap-2 group">
+                                            <div onclick="window.navigateToHotspotDetail('${hs.id}', ${targetDayIdx})" class="p-2 rounded-xl bg-purple-50/70 hover:bg-purple-100/80 border border-purple-200/70 cursor-pointer transition-all flex items-center justify-between gap-2 group" title="Cliquer pour ouvrir dans Pépites & Restos">
                                                 <div class="text-[11px] min-w-0">
-                                                    <span class="font-extrabold text-purple-800 group-hover:underline">🍴 ${hs.name}</span> <span class="text-slate-500">(${hs.category})</span><br>
+                                                    <span class="font-extrabold text-purple-700 group-hover:underline">🍴 ${hs.name}</span> <span class="text-slate-500">(${hs.category})</span><br>
                                                     <span class="text-rose-600 font-semibold">${hs.vibe}</span>
                                                 </div>
-                                                <span class="text-[10px] font-extrabold text-purple-700 bg-white px-2 py-1 rounded-lg border border-purple-200 shrink-0 shadow-sm">Voir ↗</span>
+                                                <span class="text-[10px] font-extrabold text-purple-700 bg-white px-2 py-1 rounded-lg border border-purple-200 shrink-0">Voir ↗</span>
                                             </div>
                                         `).join('')}
                                     </div>
@@ -2699,33 +2548,32 @@
                             let inLinePhotos = '';
                             if (stop.photoSpots && stop.photoSpots.length > 0) {
                                 inLinePhotos = `
-                                    <div class="mt-2 pt-2 border-t border-pink-100 space-y-1.5">
-                                        <span class="text-[9px] font-extrabold uppercase text-pink-600 tracking-wider block">📸 Spots Photos liés (cliquez pour ouvrir) :</span>
+                                    <div class="mt-1.5 pt-1.5 border-t border-pink-100 space-y-1.5">
                                         ${stop.photoSpots.map(ph => `
-                                            <div onclick="window.jumpToPhotoFromDay('${ph.id}', ${targetDayIdx})" class="p-2 rounded-xl bg-pink-50/70 hover:bg-pink-100/80 border border-pink-200/70 cursor-pointer transition-all flex items-center justify-between gap-2 group">
+                                            <div onclick="window.navigateToPhotoDetail('${ph.id}', ${targetDayIdx})" class="p-2 rounded-xl bg-pink-50/70 hover:bg-pink-100/80 border border-pink-200/70 cursor-pointer transition-all flex items-center justify-between gap-2 group" title="Cliquer pour ouvrir dans Spots Photos">
                                                 <div class="text-[11px] min-w-0">
-                                                    <span class="font-extrabold text-pink-800 group-hover:underline">📸 ${ph.name}</span><br>
+                                                    <span class="font-extrabold text-pink-700 group-hover:underline">📸 Spot : ${ph.name}</span><br>
                                                     <span class="text-slate-500 italic">💡 ${ph.angleTip}</span>
                                                 </div>
-                                                <span class="text-[10px] font-extrabold text-pink-700 bg-white px-2 py-1 rounded-lg border border-pink-200 shrink-0 shadow-sm">Spot ↗</span>
+                                                <span class="text-[10px] font-extrabold text-pink-700 bg-white px-2 py-1 rounded-lg border border-pink-200 shrink-0">Spot ↗</span>
                                             </div>
                                         `).join('')}
                                     </div>
                                 `;
                             }
 
-                            const safeStopName = escapeSafeQuote(stop.name);
-
                             return `
                                 <div class="p-3.5 rounded-2xl border ${done ? 'bg-emerald-50/60 border-emerald-200' : 'bg-white border-slate-200/80'} shadow-sm">
-                                    <div class="flex flex-wrap items-center justify-between gap-1 mb-2">
+                                    <div class="flex flex-wrap items-center justify-between gap-1.5 mb-2">
                                         <span class="text-[10px] font-extrabold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md">⏰ ${stop.time || stop.startTime}</span>
-                                        ${stop.costType ? `<span class="text-[9px] font-bold text-slate-500 uppercase px-2">${stop.costType}</span>` : ''}
+                                        ${stop.costType ? `<span class="text-[9px] font-bold text-slate-500 uppercase px-1">${stop.costType}</span>` : ''}
                                         <div class="flex items-center space-x-1.5 ml-auto">
-                                            <button onclick="window.openStepModal('${stop.id}')" class="px-2 py-1 rounded-lg text-[10px] font-bold border ${rem && rem.enabled ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-slate-50 text-slate-600 border-slate-200'}">
-                                                🔔 ${rem && rem.enabled ? `-${rem.offsetMinutes}m` : 'Rappel'}
+                                            <button onclick="window.toggleStopReminder('${stop.id}', '${safeStopName}', '${stop.startTime}', '${stop.dateStr}')" class="px-2 py-1 rounded-lg text-[10px] font-extrabold transition-colors ${hasRem ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100'}" title="Programmer un rappel">
+                                                ${hasRem ? `🔔 -${rem.offsetMinutes}m` : '🔔 Rappel'}
                                             </button>
-                                            <button onclick="window.toggleActivityDone('${stop.id}')" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition-colors ${done ? 'bg-emerald-600 text-white border border-emerald-600' : 'bg-slate-50 text-slate-700 border border-slate-200'}">${done ? '✓ Fait' : '☐ À faire'}</button>
+                                            <button onclick="window.toggleActivityDone('${stop.id}')" class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition-colors ${done ? 'bg-emerald-600 text-white border border-emerald-600' : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100'}">
+                                                ${done ? '✓ Fait' : '☐ À faire'}
+                                            </button>
                                         </div>
                                     </div>
                                     <h5 class="text-xs font-bold ${done ? 'line-through text-slate-400' : 'text-slate-900'} cursor-pointer hover:text-blue-600" onclick="window.centerOnStop([${stop.coords}], '${safeStopName}')">
@@ -2733,7 +2581,6 @@
                                     </h5>
                                     ${stop.exactAddress ? `<div class="text-[10px] font-semibold text-emerald-700 mt-0.5">📍 ${stop.exactAddress}</div>` : ''}
                                     <p class="text-[11px] text-slate-600 leading-relaxed mt-1">${stop.desc}</p>
-                                    ${note ? `<div class="mt-2 p-2 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900">📝 <b>Note :</b> ${note}</div>` : ''}
                                     
                                     ${inLinePeps}
                                     ${inLinePhotos}
@@ -2763,11 +2610,11 @@
 
         function initMap() {
             if (map) return;
-            map = L.map('map', { zoomControl: false }).setView([51.515, -0.1278], 13);
+            map = L.map('map', { zoomControl: false }).setView([51.5074, -0.1278], 13);
             L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
             layers = {
-                streets: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, className: 'map-tiles-streets' }),
+                streets: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 }),
                 sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 })
             };
             currentLayer = layers.streets.addTo(map);
@@ -2777,12 +2624,6 @@
             if (!map || !layers) return;
             map.removeLayer(currentLayer);
             currentLayer = layers[type].addTo(map);
-            document.getElementById('layer-streets').className = type === 'streets'
-                ? "px-3 py-1.5 rounded-xl text-[11px] font-bold bg-blue-600 text-white shadow-sm"
-                : "px-3 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-slate-100";
-            document.getElementById('layer-sat').className = type === 'sat'
-                ? "px-3 py-1.5 rounded-xl text-[11px] font-bold bg-blue-600 text-white shadow-sm"
-                : "px-3 py-1.5 rounded-xl text-[11px] font-bold text-slate-700 hover:bg-slate-100";
         };
 
         function clearMap() {
@@ -2793,23 +2634,39 @@
         }
 
         window.highlightRouteByIndex = function(dayIdx, routeIdx) {
-            const routeObj = tripDays[dayIdx]?.routes?.[routeIdx];
+            const routeObj = tripDays[dayIdx] && tripDays[dayIdx].routes[routeIdx];
             if (routeObj) highlightRoute(routeObj);
         };
 
         function highlightRoute(routeObj) {
             if (!map || !routeObj) return;
             clearMap();
-            let latlngs = [];
-            routeObj.stops.forEach((stop) => {
+            const latlngs = [];
+            routeObj.stops.forEach(stop => {
                 latlngs.push(stop.coords);
-                let marker = L.marker(stop.coords).addTo(map);
+                const marker = L.marker(stop.coords).addTo(map);
                 marker.bindPopup(`<div class="text-xs"><b>${stop.name}</b><br>${stop.desc}</div>`);
                 currentMarkers.push(marker);
             });
             if (latlngs.length > 0) {
                 polylineLayer = L.polyline(latlngs, { color: '#2563eb', weight: 4, opacity: 0.85, dashArray: '6, 8' }).addTo(map);
-                map.fitBounds(polylineLayer.getBounds(), { padding: [45, 45] });
+                map.fitBounds(polylineLayer.getBounds(), { padding: [50, 50] });
+            }
+        }
+
+        function highlightCustomMarkers(items, prefixIcon) {
+            if (!map || !items || items.length === 0) return;
+            clearMap();
+            const bounds = [];
+            items.forEach(item => {
+                if (!item.coords) return;
+                bounds.push(item.coords);
+                const marker = L.marker(item.coords).addTo(map);
+                marker.bindPopup(`<div class="text-xs"><b>${prefixIcon || ''} ${item.name}</b><br>${item.vibe || item.angleTip || ''}</div>`);
+                currentMarkers.push(marker);
+            });
+            if (bounds.length > 0) {
+                map.fitBounds(L.latLngBounds(bounds), { padding: [50, 50], maxZoom: 15 });
             }
         }
 
@@ -2835,7 +2692,7 @@
             if (!map) return;
             clearMap();
             const homeCoords = [50.3881, 4.4748];
-            let m1 = L.marker(homeCoords).addTo(map).bindPopup("<b>Domicile — Rue de Villers 181, 6010 Couillet</b>").openPopup();
+            const m1 = L.marker(homeCoords).addTo(map).bindPopup("<b>Domicile — Rue de Villers 181, 6010 Couillet</b>").openPopup();
             currentMarkers.push(m1);
             map.setView(homeCoords, 15);
         };
@@ -2848,15 +2705,16 @@
             }
         };
 
-        // --- COLLABORATION, PARTAGE & BUDGET ---
+        // --- GESTION COLLABORATIVE & DÉTECTION APPAREIL ---
         function detectDeviceLabel() {
             const ua = navigator.userAgent || '';
             if (/iPad/i.test(ua)) return '📱 iPad Air';
             if (/iPhone/i.test(ua)) return '📱 iPhone';
             if (/Pixel/i.test(ua)) return '📱 Pixel';
             if (/Android/i.test(ua)) return '📱 Android';
-            if (/Macintosh|Windows/i.test(ua)) return '💻 Ordinateur';
-            return '📱 Appareil';
+            if (/Macintosh/i.test(ua)) return '💻 Mac';
+            if (/Windows/i.test(ua)) return '💻 PC';
+            return '🌐 Web';
         }
 
         function ensureUserOnboarding() {
@@ -2876,43 +2734,45 @@
             document.getElementById('onboarding-modal').classList.add('hidden');
         };
 
-        window.promptChangeName = function() {
+        window.changeUserNamePrompt = function() {
             const modal = document.getElementById('onboarding-modal');
             const input = document.getElementById('onboarding-name-input');
             if (input && myProfile?.name) input.value = myProfile.name;
             window.closeCollabModal();
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
         };
 
         function registerParticipantInRoom(name) {
-            let persistentDeviceUid = localStorage.getItem('london2026_device_uid_v6');
-            if (!persistentDeviceUid) {
-                persistentDeviceUid = myProfile?.uid || ('usr_' + Math.random().toString(36).substring(2, 10));
-                localStorage.setItem('london2026_device_uid_v6', persistentDeviceUid);
+            let persistentUid = localStorage.getItem('london2026_device_uid_v6');
+            if (!persistentUid) {
+                persistentUid = myProfile?.uid || ('usr_' + Math.random().toString(36).substring(2, 10));
+                localStorage.setItem('london2026_device_uid_v6', persistentUid);
             }
-            const uid = persistentDeviceUid;
-            const palette = ['#2563eb', '#059669', '#7c3aed', '#db2777', '#ea580c'];
-            const color = myProfile?.color || palette[Math.abs(name.charCodeAt(0) || 0) % palette.length];
-            const device = detectDeviceLabel();
+            const colors = ['#2563eb', '#059669', '#d97706', '#7c3aed', '#db2777'];
+            const color = myProfile?.color || colors[Math.floor(Math.random() * colors.length)];
 
-            Object.keys(participantsMap).forEach(existingUid => {
-                if (existingUid !== uid && (participantsMap[existingUid]?.name || '').trim().toLowerCase() === name.trim().toLowerCase()) {
-                    delete participantsMap[existingUid];
-                    if (typeof window.removeFirebaseParticipant === 'function') {
-                        window.removeFirebaseParticipant(existingUid);
+            Object.values(participantsMap).forEach(p => {
+                if (p && p.uid !== persistentUid && p.name && p.name.trim().toLowerCase() === name.trim().toLowerCase()) {
+                    delete participantsMap[p.uid];
+                    if (typeof window.removeParticipantFromFirebase === 'function') {
+                        window.removeParticipantFromFirebase(p.uid);
                     }
                 }
             });
 
-            myProfile = { uid, name, color, device, online: true, lastActive: Date.now() };
+            myProfile = {
+                uid: persistentUid,
+                name: name.trim(),
+                device: detectDeviceLabel(),
+                color,
+                online: true,
+                lastActive: Date.now()
+            };
             localStorage.setItem('london2026_my_profile_v6', JSON.stringify(myProfile));
-            participantsMap[uid] = myProfile;
-            pushCloudPatch(`${name} a rejoint le carnet`);
-            if (typeof window.registerFirebasePresence === 'function') {
-                window.registerFirebasePresence();
+            participantsMap[persistentUid] = myProfile;
+            pushCloudPatch('Connecté');
+            if (typeof window.registerPresenceOnFirebase === 'function') {
+                window.registerPresenceOnFirebase();
             }
         }
 
@@ -2921,8 +2781,8 @@
             const targetName = participantsMap[uid]?.name || 'Invité';
             delete participantsMap[uid];
             saveLocalState();
-            if (typeof window.removeFirebaseParticipant === 'function') {
-                window.removeFirebaseParticipant(uid);
+            if (typeof window.removeParticipantFromFirebase === 'function') {
+                window.removeParticipantFromFirebase(uid);
             }
             updateCollabHeaderUI();
             renderCollabParticipantsList();
@@ -2930,21 +2790,20 @@
         };
 
         window.cleanupOfflineAndDuplicateGuests = function() {
-            const now = Date.now();
             const seenNames = new Set();
+            const sorted = Object.values(participantsMap).sort((a, b) => (b.lastActive || 0) - (a.lastActive || 0));
             let removedCount = 0;
 
-            const sorted = Object.values(participantsMap).sort((a, b) => (b.lastActive || 0) - (a.lastActive || 0));
             sorted.forEach(p => {
                 if (!p || !p.uid) return;
                 const normName = (p.name || '').trim().toLowerCase();
                 const isMe = myProfile && p.uid === myProfile.uid;
-                const isOnline = p.online === true && (!p.lastActive || (now - p.lastActive) < 180000);
+                const isOnline = p.online === true && (Date.now() - (p.lastActive || 0) < 120000);
 
                 if (!isMe && (seenNames.has(normName) || !isOnline)) {
                     delete participantsMap[p.uid];
-                    if (typeof window.removeFirebaseParticipant === 'function') {
-                        window.removeFirebaseParticipant(p.uid);
+                    if (typeof window.removeParticipantFromFirebase === 'function') {
+                        window.removeParticipantFromFirebase(p.uid);
                     }
                     removedCount++;
                 } else {
@@ -2955,39 +2814,26 @@
             saveLocalState();
             updateCollabHeaderUI();
             renderCollabParticipantsList();
-            window.showToast(removedCount > 0 ? `🧹 ${removedCount} doublon(s) / hors-ligne supprimé(s)` : `✨ Liste déjà propre !`);
+            window.showToast(removedCount > 0 ? `🧹 ${removedCount} doublon(s) / invité(s) inactif(s) supprimé(s)` : `✨ Liste déjà propre !`);
         };
 
         window.openCollabModal = function() {
-            const modal = document.getElementById('collab-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            const shareUrl = new URL(window.location.href);
-            shareUrl.searchParams.set('voyage', currentRoomId);
-            document.getElementById('collab-share-url').value = shareUrl.toString();
-            const myNameEl = document.getElementById('my-current-profile-name');
-            if (myNameEl && myProfile) {
-                myNameEl.textContent = `${myProfile.name} (${myProfile.device || detectDeviceLabel()})`;
-            }
+            document.getElementById('collab-modal').classList.remove('hidden');
+            document.getElementById('collab-modal').classList.add('flex');
+            document.getElementById('collab-share-url').value = window.location.href;
             renderCollabParticipantsList();
         };
 
-        window.closeCollabModal = function() {
-            document.getElementById('collab-modal').classList.add('hidden');
-        };
-
+        window.closeCollabModal = function() { document.getElementById('collab-modal').classList.add('hidden'); };
         window.copyShareLink = function() {
-            const input = document.getElementById('collab-share-url');
-            if (input) {
-                input.select();
-                document.execCommand('copy');
-                window.showToast("📋 Lien collaboratif copié !");
-            }
+            navigator.clipboard.writeText(window.location.href);
+            window.showToast("📋 Lien de synchronisation copié !");
         };
 
         function isParticipantCurrentlyOnline(p) {
             if (!p) return false;
-            if (p.online === true && (!p.lastActive || (Date.now() - p.lastActive) < 180000)) return true;
+            if (p.online === true && (Date.now() - (p.lastActive || 0) < 120000)) return true;
+            if (myProfile && p.uid === myProfile.uid) return true;
             return false;
         }
 
@@ -2995,30 +2841,33 @@
             const list = document.getElementById('collab-participants-list');
             if (!list) return;
             const entries = Object.values(participantsMap).sort((a, b) => (b.lastActive || 0) - (a.lastActive || 0));
-            const onlineCount = entries.filter(isParticipantCurrentlyOnline).length || 1;
-            const pill = document.getElementById('online-count-pill');
-            if (pill) pill.textContent = `${onlineCount} en ligne`;
-
+            if (entries.length === 0) {
+                list.innerHTML = `<p class="text-xs text-slate-400 italic">Aucun participant enregistré.</p>`;
+                return;
+            }
             list.innerHTML = entries.map(p => {
                 const online = isParticipantCurrentlyOnline(p);
                 const isMe = myProfile && p.uid === myProfile.uid;
-                const safeUid = escapeSafeQuote(p.uid || '');
                 return `
-                    <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-200/70 text-xs gap-2">
+                    <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-200/70 text-xs">
                         <div class="flex items-center space-x-2.5 min-w-0">
-                            <div class="w-8 h-8 rounded-full text-white text-[11px] font-extrabold flex items-center justify-center shrink-0" style="background-color: ${p.color || '#2563eb'}">
-                                ${(p.name || 'V').slice(0, 2).toUpperCase()}
+                            <div class="w-7 h-7 rounded-full text-white text-[11px] font-extrabold flex items-center justify-center shadow-sm shrink-0" style="background-color: ${p.color || '#2563eb'}">
+                                ${(p.name || 'U').slice(0, 2).toUpperCase()}
                             </div>
                             <div class="min-w-0">
-                                <div class="font-extrabold text-slate-900 truncate">${p.name || 'Voyageur'} ${isMe ? '<span class="text-[10px] text-blue-600">(Vous)</span>' : ''}</div>
+                                <div class="font-extrabold text-slate-900 truncate">${p.name} ${isMe ? '<span class="text-[10px] text-blue-600">(Vous)</span>' : ''}</div>
                                 <div class="text-[10px] text-slate-500 truncate">${p.device || '📱 Appareil'} ${p.lastAction ? '• ' + p.lastAction : ''}</div>
                             </div>
                         </div>
-                        <div class="flex items-center space-x-1.5 shrink-0">
-                            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${online ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">
+                        <div class="flex items-center space-x-2 shrink-0 ml-2">
+                            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${online ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}">
                                 ${online ? '● En ligne' : '○ Hors-ligne'}
                             </span>
-                            ${!isMe ? `<button onclick="window.deleteParticipant('${safeUid}')" class="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold transition-colors" title="Supprimer cet invité">🗑️</button>` : ''}
+                            ${!isMe ? `
+                                <button onclick="window.deleteParticipant('${p.uid}')" class="w-7 h-7 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center font-bold transition-colors" title="Supprimer cet invité">
+                                    🗑️
+                                </button>
+                            ` : ''}
                         </div>
                     </div>
                 `;
@@ -3026,43 +2875,40 @@
         }
 
         function updateCollabHeaderUI() {
-            const stack = document.getElementById('header-avatars-stack');
             const entries = Object.values(participantsMap);
             const onlineEntries = entries.filter(isParticipantCurrentlyOnline);
-            const count = onlineEntries.length || (myProfile ? 1 : 0);
+            const countEl = document.getElementById('live-online-count');
+            if (countEl) {
+                countEl.textContent = `${Math.max(1, onlineEntries.length)} en ligne`;
+            }
 
+            const stack = document.getElementById('header-avatars-stack');
             if (stack) {
-                stack.innerHTML = entries.slice(0, 5).map(p => {
+                stack.innerHTML = entries.map(p => {
                     const online = isParticipantCurrentlyOnline(p);
                     return `
-                        <div class="relative w-7 h-7 rounded-full text-white text-[10px] font-extrabold flex items-center justify-center ring-2 ring-white shadow-sm" style="background-color: ${p.color || '#2563eb'}" title="${p.name} (${online ? 'En ligne' : 'Hors-ligne'})">
-                            ${(p.name || 'V').slice(0, 2).toUpperCase()}
+                        <div class="relative w-7 h-7 rounded-full text-white text-[10px] font-extrabold flex items-center justify-center ring-2 ring-white shadow-sm" style="background-color: ${p.color || '#2563eb'}" title="${p.name} (${p.device || 'Appareil'}) - ${online ? 'En ligne' : 'Hors-ligne'}">
+                            ${(p.name || 'U').slice(0, 2).toUpperCase()}
                             <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full ring-1 ring-white ${online ? 'bg-emerald-500' : 'bg-slate-400'}"></span>
                         </div>
                     `;
                 }).join('');
             }
-
-            const btnMobileCount = document.getElementById('btn-share-mobile-count');
-            const btnDesktop = document.getElementById('btn-share-desktop');
-            if (btnMobileCount) btnMobileCount.textContent = `${count}`;
-            if (btnDesktop) btnDesktop.textContent = `👥 En ligne (${count})`;
         }
 
         window.showToast = function(msg) {
             const banner = document.getElementById('toast-banner');
-            document.getElementById('toast-text').textContent = msg;
+            const textEl = document.getElementById('toast-text');
+            if (!banner || !textEl) return;
+            textEl.textContent = msg;
             banner.classList.remove('hidden');
             banner.classList.add('flex');
-            clearTimeout(window._toastTimer);
-            window._toastTimer = setTimeout(() => banner.classList.add('hidden'), 3200);
+            setTimeout(() => banner.classList.add('hidden'), 3200);
         };
 
         window.addSharedExpense = function() {
-            const labelInput = document.getElementById('expense-label-input');
-            const amountInput = document.getElementById('expense-amount-input');
-            const label = labelInput.value.trim();
-            const amount = parseFloat(amountInput.value);
+            const label = document.getElementById('expense-label-input').value.trim();
+            const amount = parseFloat(document.getElementById('expense-amount-input').value);
             if (!label || isNaN(amount)) return;
             sharedExpenses.push({ id: 'exp_' + Date.now(), title: label, amount, payer: myProfile?.name || 'Moi' });
             pushCloudPatch('Dépense ajoutée');
@@ -3075,56 +2921,144 @@
             renderAirbnbContent();
         };
 
-        // Application entrante depuis Firebase temps réel
-        window.applyIncomingFirebaseState = function(remoteData) {
-            if (!remoteData) return;
-            if (remoteData.doneActivities) doneActivities = remoteData.doneActivities;
-            if (remoteData.baggageState) baggageState = remoteData.baggageState;
-            if (remoteData.remindersMap) remindersMap = remoteData.remindersMap;
-            if (remoteData.testedHotspots) testedHotspots = remoteData.testedHotspots;
-            if (remoteData.favHotspots) favHotspots = remoteData.favHotspots;
-            if (remoteData.donePhotos) donePhotos = remoteData.donePhotos;
-            if (remoteData.stepNotes) stepNotes = remoteData.stepNotes;
-            if (remoteData.sharedExpenses) sharedExpenses = Array.isArray(remoteData.sharedExpenses) ? remoteData.sharedExpenses : Object.values(remoteData.sharedExpenses);
+        // --- INSTALLATION PWA (COMPATIBLE MICROSOFT EDGE, CHROME, ANDROID & IOS) ---
+        var deferredPwaPrompt = null;
 
-            saveLocalState();
-            renderAirbnbContent();
+        function setupPwaSupport() {
+            try {
+                const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="120" fill="#2563eb"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-size="260" font-family="sans-serif">🇬🇧</text></svg>`;
+                const iconDataUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(iconSvg);
 
-            if (remoteData.lastUpdatedBy && myProfile && remoteData.lastUpdatedBy !== myProfile.name && remoteData.lastAction) {
-                window.showToast(`🔄 ${remoteData.lastUpdatedBy} : ${remoteData.lastAction}`);
+                const startUrl = window.location.href.split('#')[0];
+                const scopeUrl = startUrl.substring(0, startUrl.lastIndexOf('/') + 1) || startUrl;
+
+                const manifestObj = {
+                    id: scopeUrl,
+                    name: "Londigo - Guide & Checklist Londres 2026",
+                    short_name: "Londigo",
+                    description: "Carnet de voyage interactif Londres 5–8 Novembre 2026 avec synchronisation temps réel",
+                    start_url: startUrl,
+                    scope: scopeUrl,
+                    display: "standalone",
+                    display_override: ["window-controls-overlay", "standalone", "minimal-ui"],
+                    background_color: "#0f172a",
+                    theme_color: "#2563eb",
+                    orientation: "any",
+                    icons: [
+                        { src: iconDataUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any" },
+                        { src: iconDataUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+                    ]
+                };
+
+                const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+                const manifestUrl = URL.createObjectURL(manifestBlob);
+                const linkEl = document.getElementById('pwa-manifest-link');
+                if (linkEl) linkEl.setAttribute('href', manifestUrl);
+            } catch (e) {}
+
+            if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+                const swCode = `
+                    const CACHE_NAME = 'londigo-pwa-v6';
+                    self.addEventListener('install', (event) => {
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', (event) => {
+                        event.waitUntil(self.clients.claim());
+                    });
+                    self.addEventListener('fetch', (event) => {
+                        if (event.request.method !== 'GET') return;
+                        event.respondWith(
+                            fetch(event.request).catch(() => caches.match(event.request))
+                        );
+                    });
+                `;
+                try {
+                    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                    const swUrl = URL.createObjectURL(swBlob);
+                    navigator.serviceWorker.register(swUrl).catch(() => {});
+                } catch (e) {}
+            }
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPwaPrompt = e;
+                const btn = document.getElementById('pwa-install-btn');
+                if (btn) {
+                    btn.classList.remove('hidden');
+                    btn.classList.add('inline-flex');
+                }
+            });
+
+            window.addEventListener('appinstalled', () => {
+                deferredPwaPrompt = null;
+                const btn = document.getElementById('pwa-install-btn');
+                if (btn) btn.classList.add('hidden');
+                window.showToast("📲 Londigo a été installé avec succès !");
+            });
+        }
+
+        window.triggerPwaInstall = async function() {
+            if (deferredPwaPrompt) {
+                deferredPwaPrompt.prompt();
+                const { outcome } = await deferredPwaPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    const btn = document.getElementById('pwa-install-btn');
+                    if (btn) btn.classList.add('hidden');
+                }
+                deferredPwaPrompt = null;
+            } else {
+                window.showToast("💡 Dans Edge : cliquez sur l'icône « Application disponible » dans la barre d'adresse ou Menu ⋯ > Applications > Installer Londigo.");
             }
         };
 
-        window.applyIncomingFirebaseParticipants = function(remoteParticipants) {
-            participantsMap = remoteParticipants || {};
-            if (myProfile && myProfile.uid && !participantsMap[myProfile.uid]) {
-                participantsMap[myProfile.uid] = myProfile;
-            }
-            localStorage.setItem('london2026_participants_v6', JSON.stringify(participantsMap));
-            updateCollabHeaderUI();
-            renderCollabParticipantsList();
-        };
-
+        // --- INITIALISATION AU CHARGEMENT ---
         window.addEventListener('DOMContentLoaded', () => {
+            setupPwaSupport();
             initMap();
+
+            const pinInput = document.getElementById('pin-input');
+            if (pinInput) {
+                pinInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        window.checkPinCode();
+                    }
+                });
+                pinInput.addEventListener('input', () => {
+                    const err = document.getElementById('pin-error');
+                    if (err) err.classList.add('hidden');
+                    if (pinInput.value.trim().length === 4) {
+                        window.checkPinCode();
+                    }
+                });
+            }
+
             const authModal = document.getElementById('auth-modal');
             if (!isAppUnlocked) {
-                authModal.classList.remove('hidden');
+                if (authModal) {
+                    authModal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+                    authModal.classList.add('flex');
+                }
+                if (pinInput) setTimeout(() => pinInput.focus(), 150);
             } else {
-                authModal.classList.add('hidden');
+                if (authModal) {
+                    authModal.classList.add('hidden');
+                    authModal.classList.remove('flex');
+                }
                 ensureUserOnboarding();
             }
+
             startReminderEngine();
             updateCollabHeaderUI();
             renderAirbnbContent();
         });
     </script>
 
-    <!-- MODULE FIREBASE TEMPS RÉEL (VOTRE CONFIGURATION LONDIGO-81C1D) -->
+    <!-- MODULE FIREBASE TEMPS RÉEL (PROJET LONDIGO-81C1D) -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-        import { getAnalytics, isSupported as isAnalyticsSupported } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js";
-        import { getDatabase, ref, set, update, onValue, onDisconnect, remove } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+        import { getDatabase, ref, set, update, remove, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAteN0zI7V6dFf4XcPNzBy3lwVvLV77seM",
@@ -3139,125 +3073,114 @@
 
         try {
             const app = initializeApp(firebaseConfig);
-            isAnalyticsSupported().then(yes => { if (yes) getAnalytics(app); }).catch(() => {});
+            try { getAnalytics(app); } catch (e) {}
+            const rtdb = getDatabase(app);
 
-            const db = getDatabase(app);
-            const roomPath = `rooms/${window.currentRoomId}`;
-            const stateRef = ref(db, `${roomPath}/state`);
-            const participantsRef = ref(db, `${roomPath}/participants`);
-            const connectedRef = ref(db, '.info/connected');
+            const safeRoomKey = (window.currentRoomId || 'londres-2026-partage').replace(/[.#$/[\]]/g, '_');
+            const roomStateRef = ref(rtdb, `rooms/${safeRoomKey}/state`);
+            const roomParticipantsRef = ref(rtdb, `rooms/${safeRoomKey}/participants`);
+            const connectedRef = ref(rtdb, '.info/connected');
 
             let isApplyingRemote = false;
 
-            function sanitizeBaggageKeys(rawBag) {
-                const clean = {};
-                if (!rawBag || typeof rawBag !== 'object') return clean;
-                Object.keys(rawBag).forEach(k => {
-                    if (!/[.#$\[\]\/]/.test(k)) {
-                        clean[k] = rawBag[k];
-                    }
-                });
-                return clean;
-            }
-
-            window.pushFirebaseRoomState = function(actionLabel) {
+            window.syncStateToFirebase = function(actionLabel) {
                 if (isApplyingRemote) return;
                 const payload = {
                     doneActivities: window.doneActivities || {},
-                    baggageState: sanitizeBaggageKeys(window.baggageState),
-                    remindersMap: window.remindersMap || {},
-                    testedHotspots: window.testedHotspots || {},
-                    favHotspots: window.favHotspots || {},
-                    donePhotos: window.donePhotos || {},
-                    stepNotes: window.stepNotes || {},
+                    baggageState: window.baggageState || {},
+                    remindersState: window.remindersState || {},
                     sharedExpenses: window.sharedExpenses || [],
-                    lastUpdatedBy: window.myProfile?.name || 'Voyageur',
-                    lastAction: actionLabel || 'Mise à jour',
-                    updatedAt: Date.now()
+                    updatedAt: Date.now(),
+                    updatedBy: window.myProfile?.name || 'Participant',
+                    lastAction: actionLabel || 'Mise à jour'
                 };
-                set(stateRef, payload).catch((err) => {
-                    console.warn("Firebase write warning:", err.message);
+                set(roomStateRef, payload).catch(err => {
+                    console.warn("Erreur écriture Firebase RTDB :", err);
                 });
 
                 if (window.myProfile && window.myProfile.uid) {
-                    const myRef = ref(db, `${roomPath}/participants/${window.myProfile.uid}`);
+                    const myRef = ref(rtdb, `rooms/${safeRoomKey}/participants/${window.myProfile.uid}`);
                     update(myRef, {
-                        name: window.myProfile.name,
-                        color: window.myProfile.color || '#2563eb',
-                        device: window.myProfile.device || '📱 Appareil',
+                        ...window.myProfile,
                         online: true,
-                        lastAction: actionLabel || 'En ligne',
-                        lastActive: Date.now()
+                        lastActive: Date.now(),
+                        lastAction: actionLabel || 'Actif'
                     }).catch(() => {});
                 }
             };
 
-            window.registerFirebasePresence = function() {
+            window.registerPresenceOnFirebase = function() {
                 if (!window.myProfile || !window.myProfile.uid) return;
-                const myRef = ref(db, `${roomPath}/participants/${window.myProfile.uid}`);
+                const myRef = ref(rtdb, `rooms/${safeRoomKey}/participants/${window.myProfile.uid}`);
                 const profileData = {
-                    uid: window.myProfile.uid,
-                    name: window.myProfile.name,
-                    color: window.myProfile.color || '#2563eb',
-                    device: window.myProfile.device || '📱 Appareil',
+                    ...window.myProfile,
                     online: true,
                     lastActive: Date.now()
                 };
                 set(myRef, profileData).catch(() => {});
                 try {
-                    onDisconnect(myRef).update({ online: false, lastActive: Date.now() });
+                    onDisconnect(myRef).update({
+                        online: false,
+                        lastActive: Date.now()
+                    });
                 } catch (e) {}
             };
 
-            window.removeFirebaseParticipant = function(uid) {
+            window.removeParticipantFromFirebase = function(uid) {
                 if (!uid) return;
-                const targetRef = ref(db, `${roomPath}/participants/${uid}`);
-                remove(targetRef).catch(() => {});
+                const targetRef = ref(rtdb, `rooms/${safeRoomKey}/participants/${uid}`);
+                remove(targetRef).catch(err => {
+                    console.warn("Erreur suppression invité Firebase :", err);
+                });
             };
 
             onValue(connectedRef, (snap) => {
-                const statusEl = document.getElementById('live-sync-status');
-                const dotEl = document.getElementById('live-sync-dot');
-                const badgeEl = document.getElementById('modal-firebase-badge');
                 if (snap.val() === true) {
-                    if (statusEl) statusEl.textContent = `Sync Live • Salon ${window.currentRoomId}`;
-                    if (dotEl) dotEl.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0";
-                    if (badgeEl) {
-                        badgeEl.textContent = "Firebase En Ligne ✓";
-                        badgeEl.className = "text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800";
-                    }
-                    window.registerFirebasePresence();
-                } else {
-                    if (statusEl) statusEl.textContent = "Mode hors-ligne (sauvegarde locale)";
-                    if (dotEl) dotEl.className = "w-2 h-2 rounded-full bg-amber-500 shrink-0";
+                    window.registerPresenceOnFirebase();
                 }
             });
 
-            onValue(stateRef, (snapshot) => {
+            onValue(roomStateRef, (snapshot) => {
                 const data = snapshot.val();
                 if (!data) {
-                    window.pushFirebaseRoomState("Initialisation du carnet");
+                    window.syncStateToFirebase('Initialisation');
                     return;
                 }
                 isApplyingRemote = true;
-                window.applyIncomingFirebaseState(data);
+                window.doneActivities = data.doneActivities || {};
+                window.baggageState = data.baggageState || {};
+                window.remindersState = data.remindersState || {};
+                window.sharedExpenses = Array.isArray(data.sharedExpenses)
+                    ? data.sharedExpenses
+                    : Object.values(data.sharedExpenses || {});
+                saveLocalState();
+                renderAirbnbContent();
                 isApplyingRemote = false;
             });
 
-            onValue(participantsRef, (snapshot) => {
+            onValue(roomParticipantsRef, (snapshot) => {
                 const data = snapshot.val() || {};
-                window.applyIncomingFirebaseParticipants(data);
+                window.participantsMap = data;
+                if (window.myProfile && window.myProfile.uid && !window.participantsMap[window.myProfile.uid]) {
+                    window.participantsMap[window.myProfile.uid] = window.myProfile;
+                }
+                saveLocalState();
+                updateCollabHeaderUI();
+                renderCollabParticipantsList();
             });
 
             setInterval(() => {
                 if (window.myProfile && window.myProfile.uid) {
-                    const myRef = ref(db, `${roomPath}/participants/${window.myProfile.uid}`);
-                    update(myRef, { online: true, lastActive: Date.now() }).catch(() => {});
+                    const myRef = ref(rtdb, `rooms/${safeRoomKey}/participants/${window.myProfile.uid}`);
+                    update(myRef, {
+                        online: true,
+                        lastActive: Date.now(),
+                        device: detectDeviceLabel()
+                    }).catch(() => {});
                 }
-            }, 45000);
-
+            }, 25000);
         } catch (err) {
-            console.warn("Erreur d'initialisation Firebase :", err);
+            console.warn("Initialisation Firebase ignorée ou hors-ligne :", err);
         }
     </script>
 </body>
