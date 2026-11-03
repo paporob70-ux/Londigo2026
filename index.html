@@ -272,7 +272,7 @@
     </div>
 
     <!-- SIDEBAR / BOTTOM SHEET -->
-    <div id="sidebar" class="w-full md:w-[560px] h-[58dvh] md:h-full z-20 flex flex-col liquid-glass order-2 md:order-1 shadow-2xl relative rounded-t-[32px] md:rounded-none shrink-0">
+    <div id="sidebar" class="w-full md:w-[580px] h-[58dvh] md:h-full z-20 flex flex-col liquid-glass order-2 md:order-1 shadow-2xl relative rounded-t-[32px] md:rounded-none shrink-0">
         
         <!-- Mobile Touch Handle Bar & Quick Expand/Shrink Controls -->
         <div id="sheet-handle-zone" onclick="cycleSheetSnap()" class="w-full pt-2.5 pb-1.5 px-5 flex items-center justify-between md:hidden shrink-0 cursor-grab active:cursor-grabbing">
@@ -286,7 +286,7 @@
         </div>
 
         <!-- Header -->
-        <div id="sidebar-header" class="px-5 pt-1 md:pt-2.5 pb-3 border-b border-slate-200/60 shrink-0">
+        <div id="sidebar-header" class="px-4 md:px-5 pt-1 md:pt-2.5 pb-2.5 border-b border-slate-200/60 shrink-0">
             <div class="flex items-center justify-between gap-2">
                 <div class="min-w-0">
                     <div class="flex flex-wrap items-center gap-1.5">
@@ -334,7 +334,7 @@
                 <div id="global-progress-bar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
             </div>
 
-            <!-- Navigation Tabs -->
+            <!-- 1. SÉLECTEUR DE JOURS (5 ONGLETS) -->
             <div class="grid grid-cols-5 gap-1 mt-2.5 bg-slate-200/70 p-1 rounded-2xl">
                 <button onclick="switchDay(0)" id="day-btn-0" class="py-1.5 text-[10px] md:text-[11px] font-bold rounded-xl transition-all shadow-sm bg-white text-blue-600">🚄 Trajets</button>
                 <button onclick="switchDay(1)" id="day-btn-1" class="py-1.5 text-[10px] md:text-[11px] font-bold rounded-xl transition-all text-slate-600 hover:text-slate-900">Jeu 5 Nov</button>
@@ -342,11 +342,35 @@
                 <button onclick="switchDay(3)" id="day-btn-3" class="py-1.5 text-[10px] md:text-[11px] font-bold rounded-xl transition-all text-slate-600 hover:text-slate-900">Sam 7 Nov</button>
                 <button onclick="switchDay(4)" id="day-btn-4" class="py-1.5 text-[10px] md:text-[11px] font-bold rounded-xl transition-all text-slate-600 hover:text-slate-900">Dim 8 Nov</button>
             </div>
+
+            <!-- 2. GROS BOUTONS D'ONGLETS PAR CATÉGORIES (ANTI-SCROLL BRUT) -->
+            <div class="grid grid-cols-5 gap-1.5 mt-2">
+                <button onclick="switchCategory('programme')" id="cat-btn-programme" class="flex flex-col items-center justify-center py-2 px-1 rounded-2xl border transition-all bg-blue-600 text-white border-blue-600 shadow-md">
+                    <span class="text-sm leading-none">🗺️</span>
+                    <span class="text-[10px] font-extrabold mt-1 leading-tight">Étapes</span>
+                </button>
+                <button onclick="switchCategory('restos')" id="cat-btn-restos" class="flex flex-col items-center justify-center py-2 px-1 rounded-2xl border transition-all bg-white/90 text-slate-700 border-slate-200/90 hover:bg-purple-50">
+                    <span class="text-sm leading-none">🍴</span>
+                    <span class="text-[10px] font-extrabold mt-1 leading-tight">Restos</span>
+                </button>
+                <button onclick="switchCategory('photos')" id="cat-btn-photos" class="flex flex-col items-center justify-center py-2 px-1 rounded-2xl border transition-all bg-white/90 text-slate-700 border-slate-200/90 hover:bg-pink-50">
+                    <span class="text-sm leading-none">📸</span>
+                    <span class="text-[10px] font-extrabold mt-1 leading-tight">Photos</span>
+                </button>
+                <button onclick="switchCategory('budget')" id="cat-btn-budget" class="flex flex-col items-center justify-center py-2 px-1 rounded-2xl border transition-all bg-white/90 text-slate-700 border-slate-200/90 hover:bg-emerald-50">
+                    <span class="text-sm leading-none">💷</span>
+                    <span class="text-[10px] font-extrabold mt-1 leading-tight">Budget</span>
+                </button>
+                <button onclick="switchCategory('checklist')" id="cat-btn-checklist" class="flex flex-col items-center justify-center py-2 px-1 rounded-2xl border transition-all bg-white/90 text-slate-700 border-slate-200/90 hover:bg-amber-50">
+                    <span class="text-sm leading-none">✅</span>
+                    <span class="text-[10px] font-extrabold mt-1 leading-tight">Checklist</span>
+                </button>
+            </div>
         </div>
 
         <!-- Scrollable Content -->
         <div id="itineraries-container" class="flex-1 overflow-y-auto px-4 md:px-5 py-3.5 space-y-4 overscroll-contain">
-            <!-- Dynamically populated -->
+            <!-- Dynamically populated according to activeDayIndex + activeCategory -->
         </div>
     </div>
 
@@ -397,6 +421,8 @@
         var showPhotoPinsOnMap = true;
         var checklistFilter = 'all';
         var currentModalActivityId = null;
+        var activeCategory = 'programme'; // 'programme' | 'restos' | 'photos' | 'budget' | 'checklist'
+        var scopeAllDaysForSubTabs = false; // false = jour actif, true = tout le séjour
 
         // Fonctions d'état de base définies immédiatement pour éviter tout ReferenceError
         function isActivityDone(id) {
@@ -1757,7 +1783,6 @@
         const AVATAR_COLORS = ['#2563eb', '#059669', '#d97706', '#e11d48', '#7c3aed', '#0d9488'];
 
         function ensureUserOnboarding() {
-            // Nettoyage d'éventuels anciens profils fictifs
             Object.keys(participantsMap).forEach(uid => {
                 const p = participantsMap[uid];
                 if (!p || !p.name || /^Voyageur\s*\d+/i.test(p.name)) {
@@ -2375,6 +2400,34 @@
             }
         }
 
+        function switchCategory(catKey) {
+            activeCategory = catKey;
+            const styles = {
+                programme: 'bg-blue-600 text-white border-blue-600 shadow-md',
+                restos: 'bg-purple-600 text-white border-purple-600 shadow-md',
+                photos: 'bg-pink-600 text-white border-pink-600 shadow-md',
+                budget: 'bg-emerald-600 text-white border-emerald-600 shadow-md',
+                checklist: 'bg-slate-900 text-white border-slate-900 shadow-md'
+            };
+            ['programme', 'restos', 'photos', 'budget', 'checklist'].forEach(c => {
+                const btn = document.getElementById(`cat-btn-${c}`);
+                if (!btn) return;
+                if (c === catKey) {
+                    btn.className = `flex flex-col items-center justify-center py-2 px-1 rounded-2xl border transition-all ${styles[c]}`;
+                } else {
+                    btn.className = "flex flex-col items-center justify-center py-2 px-1 rounded-2xl border transition-all bg-white/90 text-slate-700 border-slate-200/90 hover:bg-slate-100";
+                }
+            });
+            const container = document.getElementById('itineraries-container');
+            if (container) container.scrollTop = 0;
+            renderItineraries();
+        }
+
+        function toggleSubTabScope() {
+            scopeAllDaysForSubTabs = !scopeAllDaysForSubTabs;
+            renderItineraries();
+        }
+
         function clearMap() {
             if (!map) return;
             currentMarkers.forEach(m => map.removeLayer(m));
@@ -2398,7 +2451,6 @@
                 marker.bindPopup(`<div class="text-xs"><span class="font-bold text-blue-600">${stop.time || ''}</span><br><b>${stop.name}</b>${addressLine}<br><span class="text-slate-600">${stop.desc}</span></div>`);
                 currentMarkers.push(marker);
 
-                // Marqueurs Restaurants / Bars
                 if (showHotspotPinsOnMap && stop.hotspots) {
                     stop.hotspots.forEach(hs => {
                         const fav = isHotspotFav(hs.id);
@@ -2412,7 +2464,6 @@
                     });
                 }
 
-                // Marqueurs Spots Photos
                 if (showPhotoPinsOnMap && stop.photoSpots) {
                     stop.photoSpots.forEach(ph => {
                         const taken = isPhotoDone(ph.id);
@@ -2626,14 +2677,299 @@
             });
         }
 
-        // --- RENDU PRINCIPAL DES ITINÉRAIRES, RESTOS, SPOTS PHOTOS, NOTES & CHECKLIST ---
+        // --- RENDU PAR ONGLETS DE CATÉGORIES (SANS LISTE BRUTE INTERMINABLE) ---
         function renderItineraries() {
             updateGlobalProgress();
             updateCollabHeaderUI();
             const container = document.getElementById('itineraries-container');
             const dayData = tripDays[activeDayIndex];
             if (!container || !dayData) return;
-            
+
+            // =========================================================================
+            // ONGLET CATÉGORIE 2 : 🍴 RESTOS, PUBS & NIGHTLIFE
+            // =========================================================================
+            if (activeCategory === 'restos') {
+                const daysToScan = scopeAllDaysForSubTabs ? tripDays : [dayData];
+                const collectedHotspots = [];
+                daysToScan.forEach(d => {
+                    d.routes.forEach(r => {
+                        r.stops.forEach(s => {
+                            if (s.hotspots && s.hotspots.length > 0) {
+                                s.hotspots.forEach(hs => {
+                                    collectedHotspots.push({ hs, stopName: s.name, dayShort: d.dayShort });
+                                });
+                            }
+                        });
+                    });
+                });
+
+                let html = `
+                    <div class="flex items-center justify-between bg-purple-50 border border-purple-200 rounded-2xl p-3.5 shadow-sm">
+                        <div>
+                            <div class="text-xs font-extrabold uppercase tracking-wider text-purple-800">🍴 Pépites Restos, Pubs & Bars</div>
+                            <p class="text-[11px] text-purple-600 mt-0.5">${scopeAllDaysForSubTabs ? 'Affichage : Tout le séjour à Londres' : `Affichage : ${dayData.dayShort}`}</p>
+                        </div>
+                        <button onclick="toggleSubTabScope()" class="px-3 py-1.5 rounded-xl text-[11px] font-extrabold bg-white text-purple-700 border border-purple-300 shadow-sm hover:bg-purple-100 transition-all">
+                            ${scopeAllDaysForSubTabs ? `Voir ${dayData.dayShort} seul` : 'Voir tout Londres (Tous les jours)'}
+                        </button>
+                    </div>
+                `;
+
+                if (collectedHotspots.length === 0) {
+                    html += `
+                        <div class="liquid-glass rounded-2xl p-6 text-center border border-slate-200/80">
+                            <div class="text-2xl mb-2">🍽️</div>
+                            <div class="text-xs font-bold text-slate-800">Aucun restaurant enregistré sur l'onglet « ${dayData.dayShort} ».</div>
+                            <button onclick="toggleSubTabScope()" class="mt-3 px-4 py-2 rounded-xl bg-purple-600 text-white text-xs font-extrabold shadow-sm">
+                                Afficher toutes les pépites de Londres →
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    html += `<div class="grid grid-cols-1 gap-3 pb-10">`;
+                    collectedHotspots.forEach(({ hs, stopName, dayShort }) => {
+                        const tested = isHotspotTested(hs.id);
+                        const fav = isHotspotFav(hs.id);
+                        const hsQuery = encodeURIComponent(`${hs.name} London`);
+                        const hsGmaps = `https://www.google.com/maps/search/?api=1&query=${hsQuery}`;
+                        const hsApple = `https://maps.apple.com/?q=${hsQuery}&ll=${hs.coords[0]},${hs.coords[1]}`;
+                        const theForkUrl = `https://www.thefork.co.uk/search?searchText=${encodeURIComponent(hs.name)}`;
+                        const googleReserveUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hs.name + ' reservation London')}`;
+                        const sHsName = hs.name.replace(/'/g, "\\'");
+                        const sHsCat = hs.category.replace(/'/g, "\\'");
+                        const sHsRat = hs.rating.replace(/'/g, "\\'");
+                        const sHsVibe = hs.vibe.replace(/'/g, "\\'");
+                        const sHsDesc = hs.desc.replace(/'/g, "\\'");
+
+                        html += `
+                            <div class="liquid-glass rounded-2xl p-4 border ${tested ? 'border-emerald-300 bg-emerald-50/40' : 'border-purple-200/80'} shadow-sm">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div>
+                                        <div class="flex flex-wrap items-center gap-1">
+                                            <span class="text-[9px] font-extrabold uppercase bg-slate-900 text-white px-2 py-0.5 rounded-md">${dayShort}</span>
+                                            <span class="text-[9px] font-extrabold uppercase text-purple-700 bg-purple-100 px-2 py-0.5 rounded-md">${hs.category} • ${hs.rating}</span>
+                                        </div>
+                                        <h4 onclick="centerOnHotspot([${hs.coords}], '${sHsName}', '${sHsCat}', '${sHsRat}', '${sHsVibe}', '${sHsDesc}')"
+                                            class="text-sm font-extrabold text-slate-900 mt-1.5 cursor-pointer hover:text-purple-700">${hs.name}</h4>
+                                        <div class="text-[11px] font-semibold text-rose-600 mt-0.5">${hs.vibe}</div>
+                                        <div class="text-[10px] text-slate-400 mt-0.5">📍 Près de : ${stopName}</div>
+                                    </div>
+                                    <div class="flex items-center space-x-1 shrink-0">
+                                        <button onclick="toggleHotspotFav('${hs.id}', event)" class="px-2 py-1.5 rounded-xl border text-xs ${fav ? 'bg-rose-50 border-rose-300' : 'bg-white border-slate-200'}">${fav ? '❤️' : '🤍'}</button>
+                                        <button onclick="toggleHotspotTested('${hs.id}', event)" class="px-2.5 py-1.5 rounded-xl text-[10px] font-extrabold border ${tested ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300'}">${tested ? '✓ Testé' : '☐ À tester'}</button>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-600 mt-2 leading-relaxed">${hs.desc}</p>
+                                <div class="mt-3 pt-2.5 border-t border-slate-200/60">
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                                        <a href="${hs.bookUrl || hsGmaps}" target="_blank" rel="noopener noreferrer" class="text-center py-1.5 px-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-[10px] font-bold border border-blue-200">🌐 Site Officiel</a>
+                                        <a href="${theForkUrl}" target="_blank" rel="noopener noreferrer" class="text-center py-1.5 px-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-200">🍴 TheFork</a>
+                                        <a href="${googleReserveUrl}" target="_blank" rel="noopener noreferrer" class="text-center py-1.5 px-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] font-bold">📅 Google</a>
+                                        <a href="${hs.taUrl}" target="_blank" rel="noopener noreferrer" class="text-center py-1.5 px-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 text-[10px] font-bold border border-amber-200">🦉 TripAdvisor</a>
+                                    </div>
+                                    <div class="flex items-center space-x-3 mt-2">
+                                        <a href="${hsGmaps}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-slate-600 hover:underline">📍 Google Maps</a>
+                                        <a href="${hsApple}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-slate-600 hover:underline">🍏 Apple Plans</a>
+                                        <button onclick="centerOnHotspot([${hs.coords}], '${sHsName}', '${sHsCat}', '${sHsRat}', '${sHsVibe}', '${sHsDesc}')" class="text-[11px] font-extrabold text-purple-700 hover:underline ml-auto">Voir sur la carte 🍴</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                }
+                container.innerHTML = html;
+                return;
+            }
+
+            // =========================================================================
+            // ONGLET CATÉGORIE 3 : 📸 SPOTS PHOTOS & ANGLES VIRAUX
+            // =========================================================================
+            if (activeCategory === 'photos') {
+                const daysToScan = scopeAllDaysForSubTabs ? tripDays : [dayData];
+                const collectedPhotos = [];
+                daysToScan.forEach(d => {
+                    d.routes.forEach(r => {
+                        r.stops.forEach(s => {
+                            if (s.photoSpots && s.photoSpots.length > 0) {
+                                s.photoSpots.forEach(ph => {
+                                    collectedPhotos.push({ ph, stopName: s.name, dayShort: d.dayShort });
+                                });
+                            }
+                        });
+                    });
+                });
+
+                let html = `
+                    <div class="flex items-center justify-between bg-pink-50 border border-pink-200 rounded-2xl p-3.5 shadow-sm">
+                        <div>
+                            <div class="text-xs font-extrabold uppercase tracking-wider text-pink-800">📸 Meilleurs Spots Photos & Angles</div>
+                            <p class="text-[11px] text-pink-600 mt-0.5">${scopeAllDaysForSubTabs ? 'Affichage : Tout le séjour' : `Affichage : ${dayData.dayShort}`}</p>
+                        </div>
+                        <button onclick="toggleSubTabScope()" class="px-3 py-1.5 rounded-xl text-[11px] font-extrabold bg-white text-pink-700 border border-pink-300 shadow-sm hover:bg-pink-100 transition-all">
+                            ${scopeAllDaysForSubTabs ? `Voir ${dayData.dayShort} seul` : 'Voir tous les jours'}
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 gap-3 pb-10">
+                `;
+
+                collectedPhotos.forEach(({ ph, stopName, dayShort }) => {
+                    const taken = isPhotoDone(ph.id);
+                    const sPhName = ph.name.replace(/'/g, "\\'");
+                    const sPhTime = ph.bestTime.replace(/'/g, "\\'");
+                    const sPhTip = ph.angleTip.replace(/'/g, "\\'");
+                    const phGmaps = `https://www.google.com/maps/search/?api=1&query=${ph.coords[0]},${ph.coords[1]}`;
+
+                    html += `
+                        <div class="liquid-glass rounded-2xl p-4 border ${taken ? 'border-emerald-300 bg-emerald-50/40' : 'border-pink-200/80'} shadow-sm">
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <div class="flex flex-wrap items-center gap-1">
+                                        <span class="text-[9px] font-extrabold uppercase bg-slate-900 text-white px-2 py-0.5 rounded-md">${dayShort}</span>
+                                        <span class="text-[9px] font-extrabold uppercase text-pink-700 bg-pink-100 px-2 py-0.5 rounded-md">⏰ Idéal : ${ph.bestTime}</span>
+                                    </div>
+                                    <h4 onclick="centerOnPhotoSpot([${ph.coords}], '${sPhName}', '${sPhTime}', '${sPhTip}')"
+                                        class="text-sm font-extrabold text-slate-900 mt-1.5 cursor-pointer hover:text-pink-600">${ph.name}</h4>
+                                    <div class="text-[10px] text-slate-400 mt-0.5">📍 Étape : ${stopName}</div>
+                                </div>
+                                <button onclick="togglePhotoDone('${ph.id}', event)"
+                                        class="px-3 py-1.5 rounded-xl text-[10px] font-extrabold border shrink-0 ${taken ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-pink-700 border-pink-200'}">
+                                    ${taken ? '📷 Pris ✓' : '☐ À prendre'}
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-700 mt-2 bg-white/80 p-2.5 rounded-xl border border-pink-100">💡 <b>Conseil Cadrage :</b> ${ph.angleTip}</p>
+                            <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-100">
+                                <a href="${phGmaps}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-slate-600 hover:underline">📍 Y aller (Google Maps)</a>
+                                <button onclick="centerOnPhotoSpot([${ph.coords}], '${sPhName}', '${sPhTime}', '${sPhTip}')" class="text-[11px] font-extrabold text-pink-700 hover:underline">Voir Spot sur la Carte 📸</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                container.innerHTML = html;
+                return;
+            }
+
+            // =========================================================================
+            // ONGLET CATÉGORIE 4 : 💷 BUDGET & DÉPENSES PARTAGÉES DU GROUPE
+            // =========================================================================
+            if (activeCategory === 'budget') {
+                const totalExpenses = sharedExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+                container.innerHTML = `
+                    <div class="liquid-glass rounded-2xl p-4 shadow-sm border border-slate-200/80">
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <h3 class="font-extrabold text-slate-900 text-sm">💷 Dépenses Partagées du Groupe</h3>
+                                <p class="text-[11px] text-slate-500">Synchronisées en direct entre tous les participants</p>
+                            </div>
+                            <span class="text-xs font-extrabold text-emerald-700 bg-emerald-100 px-3 py-1.5 rounded-xl">Total : £${totalExpenses.toFixed(2)}</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5 mb-3">
+                            <input id="expense-label-input" type="text" placeholder="Ex. : Pub Soho, Taxi, Billets..." class="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs" />
+                            <input id="expense-amount-input" type="number" step="0.5" placeholder="£ Montant" class="w-24 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs" />
+                            <button onclick="addSharedExpense()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shrink-0">+ Ajouter</button>
+                        </div>
+                        ${sharedExpenses.length > 0 ? `
+                            <div class="space-y-2">
+                                ${sharedExpenses.map(e => `
+                                    <div class="flex items-center justify-between bg-white/95 border border-slate-200/80 px-3.5 py-2.5 rounded-xl text-xs shadow-sm">
+                                        <div><b>${e.title}</b> <span class="text-[10px] text-slate-500">• payé par ${e.payer}</span></div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="font-extrabold text-emerald-700">£${Number(e.amount).toFixed(2)}</span>
+                                            <button onclick="deleteSharedExpense('${e.id}')" class="text-slate-400 hover:text-rose-600 font-bold text-sm">&times;</button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `<div class="text-xs text-slate-400 text-center py-6">Aucune dépense enregistrée pour l'instant.</div>`}
+                    </div>
+                `;
+                return;
+            }
+
+            // =========================================================================
+            // ONGLET CATÉGORIE 5 : ✅ CHECKLIST GLOBALE & EXPORT .ICS
+            // =========================================================================
+            if (activeCategory === 'checklist') {
+                const allActivities = getAllActivitiesFlat();
+                const filteredActivities = allActivities.filter(item => {
+                    if (checklistFilter === 'todo') return !isActivityDone(item.id);
+                    if (checklistFilter === 'done') return isActivityDone(item.id);
+                    if (checklistFilter === 'reminders') return !!remindersState[item.id];
+                    return true;
+                });
+
+                container.innerHTML = `
+                    <div class="liquid-glass rounded-2xl p-4 shadow-sm border border-slate-200/80 pb-10">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <div>
+                                <h3 class="font-extrabold text-slate-900 text-sm">✅ Checklist Globale : Toutes les Activités & Trajets</h3>
+                                <p class="text-[11px] text-slate-500">Cochez, activez un rappel ou exportez vers votre calendrier</p>
+                            </div>
+                            <button onclick="downloadFullTripIcs()"
+                                    class="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold shadow-sm transition-all">
+                                <span>📅</span><span>Tout exporter (.ics)</span>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-1 bg-slate-100 p-1 rounded-xl mb-3 text-[10px] font-bold">
+                            <button onclick="setChecklistFilter('all')" class="py-1.5 rounded-lg transition-all ${checklistFilter === 'all' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600'}">
+                                Tout (${allActivities.length})
+                            </button>
+                            <button onclick="setChecklistFilter('todo')" class="py-1.5 rounded-lg transition-all ${checklistFilter === 'todo' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600'}">
+                                À faire (${allActivities.filter(a => !isActivityDone(a.id)).length})
+                            </button>
+                            <button onclick="setChecklistFilter('done')" class="py-1.5 rounded-lg transition-all ${checklistFilter === 'done' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-600'}">
+                                Fait (${allActivities.filter(a => isActivityDone(a.id)).length})
+                            </button>
+                            <button onclick="setChecklistFilter('reminders')" class="py-1.5 rounded-lg transition-all ${checklistFilter === 'reminders' ? 'bg-white text-amber-600 shadow-sm' : 'text-slate-600'}">
+                                🔔 Rappels (${Object.keys(remindersState).length})
+                            </button>
+                        </div>
+
+                        <div class="space-y-2">
+                            ${filteredActivities.map(item => {
+                                const done = isActivityDone(item.id);
+                                const rem = remindersState[item.id];
+                                const gCalUrl = getGoogleCalendarUrl(item);
+                                return `
+                                    <div class="p-2.5 rounded-xl border ${done ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white/95 border-slate-200'} transition-all hover:shadow-sm">
+                                        <div class="flex items-start space-x-2.5">
+                                            <input type="checkbox" ${done ? 'checked' : ''}
+                                                   onclick="toggleActivityDone('${item.id}', event)"
+                                                   class="mt-1 w-4 h-4 rounded text-emerald-600 focus:ring-0 cursor-pointer" />
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex flex-wrap items-center gap-1 mb-0.5">
+                                                    <span class="text-[9px] font-extrabold uppercase tracking-wider bg-slate-200/80 text-slate-700 px-1.5 py-0.5 rounded">${item.dayShort}</span>
+                                                    <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">⏰ ${item.time || item.startTime}</span>
+                                                </div>
+                                                <div onclick="jumpToActivityOnMap('${item.id}')"
+                                                     class="text-xs font-bold ${done ? 'line-through text-slate-400' : 'text-slate-900 hover:text-blue-600'} cursor-pointer">
+                                                    ${item.name}
+                                                </div>
+                                                <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                                                    <button onclick="openReminderModal('${item.id}', event)"
+                                                            class="inline-flex items-center space-x-1 text-[10px] font-bold px-2 py-0.5 rounded-md ${rem ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-800 border border-amber-200'}">
+                                                        <span>🔔</span><span>${rem ? `-${rem.offsetMinutes}m` : 'Rappel'}</span>
+                                                    </button>
+                                                    <a href="${gCalUrl}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md">📅 Google</a>
+                                                    <button onclick="downloadSingleIcs('${item.id}', event)" class="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">🍏 .ics</button>
+                                                    <button onclick="jumpToActivityOnMap('${item.id}')" class="text-[10px] font-bold text-blue-600 hover:underline ml-auto">Voir 📍</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // =========================================================================
+            // ONGLET CATÉGORIE 1 (PAR DÉFAUT) : 🗺️ ÉTAPES & ITINÉRAIRES DU JOUR
+            // =========================================================================
             let html = `
                 <div class="mb-2">
                     <div class="text-xs font-extrabold uppercase tracking-wider text-blue-600">${dayData.dayTitle}</div>
@@ -2834,95 +3170,23 @@
                         `;
                     }
 
-                    // Pépites Restaurants, Bars, Pubs & Réservation de table (Site Officiel, TheFork, Google) + Avis TripAdvisor
-                    if (stop.hotspots && stop.hotspots.length > 0) {
-                        html += `
-                            <div class="mt-3 pt-2.5 border-t border-purple-100/90 bg-purple-50/40 rounded-xl p-2.5 space-y-2.5">
-                                <div class="text-[10px] font-extrabold uppercase tracking-wider text-purple-800">🍴 Pépites Restos, Pubs & Nightlife (TripAdvisor ⭐ & Viral 📱)</div>
-                        `;
-                        stop.hotspots.forEach(hs => {
-                            const tested = isHotspotTested(hs.id);
-                            const fav = isHotspotFav(hs.id);
-                            const hsQuery = encodeURIComponent(`${hs.name} London`);
-                            const hsGmaps = `https://www.google.com/maps/search/?api=1&query=${hsQuery}`;
-                            const hsApple = `https://maps.apple.com/?q=${hsQuery}&ll=${hs.coords[0]},${hs.coords[1]}`;
-                            const theForkUrl = `https://www.thefork.co.uk/search?searchText=${encodeURIComponent(hs.name)}`;
-                            const googleReserveUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hs.name + ' reservation London')}`;
-                            const sHsName = hs.name.replace(/'/g, "\\'");
-                            const sHsCat = hs.category.replace(/'/g, "\\'");
-                            const sHsRat = hs.rating.replace(/'/g, "\\'");
-                            const sHsVibe = hs.vibe.replace(/'/g, "\\'");
-                            const sHsDesc = hs.desc.replace(/'/g, "\\'");
-
+                    // Boutons de raccourcis rapides vers les onglets Restos et Photos si cette étape en possède
+                    if ((stop.hotspots && stop.hotspots.length > 0) || (stop.photoSpots && stop.photoSpots.length > 0)) {
+                        html += `<div class="flex flex-wrap items-center gap-1.5 mt-2.5 pt-2 border-t border-slate-100">`;
+                        if (stop.hotspots && stop.hotspots.length > 0) {
                             html += `
-                                <div class="bg-white/95 rounded-xl p-2.5 border ${tested ? 'border-emerald-300' : 'border-purple-200/70'} shadow-sm">
-                                    <div class="flex items-start justify-between gap-1.5">
-                                        <div>
-                                            <span class="text-[9px] font-extrabold uppercase text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded">${hs.category} • ${hs.rating}</span>
-                                            <h5 onclick="centerOnHotspot([${hs.coords}], '${sHsName}', '${sHsCat}', '${sHsRat}', '${sHsVibe}', '${sHsDesc}')"
-                                                class="text-xs font-extrabold text-slate-900 mt-1 cursor-pointer hover:text-purple-700">${hs.name}</h5>
-                                            <div class="text-[10px] font-semibold text-rose-600 mt-0.5">${hs.vibe}</div>
-                                        </div>
-                                        <div class="flex items-center space-x-1 shrink-0">
-                                            <button onclick="toggleHotspotFav('${hs.id}', event)" class="px-1.5 py-1 rounded-lg border text-xs ${fav ? 'bg-rose-50 border-rose-300' : 'bg-white border-slate-200'}">${fav ? '❤️' : '🤍'}</button>
-                                            <button onclick="toggleHotspotTested('${hs.id}', event)" class="px-2 py-1 rounded-lg text-[10px] font-extrabold border ${tested ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-slate-50 text-slate-700 border-slate-200'}">${tested ? '✓ Testé' : '☐ À tester'}</button>
-                                        </div>
-                                    </div>
-                                    <p class="text-[11px] text-slate-600 mt-1 leading-relaxed">${hs.desc}</p>
-                                    <!-- Module Réserver une table (Site Officiel, TheFork, Google) + Avis TripAdvisor -->
-                                    <div class="mt-2 pt-1.5 border-t border-slate-100">
-                                        <div class="text-[9px] font-extrabold uppercase text-slate-400 mb-1">🍽️ Réserver une table & Avis :</div>
-                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1">
-                                            <a href="${hs.bookUrl || hsGmaps}" target="_blank" rel="noopener noreferrer" class="text-center py-1 px-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-[10px] font-bold border border-blue-200">🌐 Site Officiel</a>
-                                            <a href="${theForkUrl}" target="_blank" rel="noopener noreferrer" class="text-center py-1 px-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-200">🍴 TheFork</a>
-                                            <a href="${googleReserveUrl}" target="_blank" rel="noopener noreferrer" class="text-center py-1 px-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] font-bold">📅 Google</a>
-                                            <a href="${hs.taUrl}" target="_blank" rel="noopener noreferrer" class="text-center py-1 px-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 text-[10px] font-bold border border-amber-200">🦉 TripAdvisor</a>
-                                        </div>
-                                        <div class="flex items-center space-x-2 mt-1.5">
-                                            <a href="${hsGmaps}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-slate-600 hover:underline">📍 Google Maps</a>
-                                            <a href="${hsApple}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-slate-600 hover:underline">🍏 Apple Plans</a>
-                                            <button onclick="centerOnHotspot([${hs.coords}], '${sHsName}', '${sHsCat}', '${sHsRat}', '${sHsVibe}', '${sHsDesc}')" class="text-[10px] font-bold text-purple-700 hover:underline ml-auto">Voir Spot Carte 🍴</button>
-                                        </div>
-                                    </div>
-                                </div>
+                                <button onclick="switchCategory('restos')" class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 text-[10px] font-extrabold transition-all">
+                                    <span>🍴</span><span>Voir ${stop.hotspots.length} pépite${stop.hotspots.length > 1 ? 's' : ''} resto/bar →</span>
+                                </button>
                             `;
-                        });
-                        html += `</div>`;
-                    }
-
-                    // Meilleurs Spots Photos & Angles Viraux
-                    if (stop.photoSpots && stop.photoSpots.length > 0) {
-                        html += `
-                            <div class="mt-2.5 pt-2 border-t border-pink-100 bg-pink-50/40 rounded-xl p-2.5 space-y-2">
-                                <div class="text-[10px] font-extrabold uppercase tracking-wider text-pink-800">📸 Meilleurs Spots Photos & Angles Viraux</div>
-                        `;
-                        stop.photoSpots.forEach(ph => {
-                            const taken = isPhotoDone(ph.id);
-                            const sPhName = ph.name.replace(/'/g, "\\'");
-                            const sPhTime = ph.bestTime.replace(/'/g, "\\'");
-                            const sPhTip = ph.angleTip.replace(/'/g, "\\'");
-                            const phGmaps = `https://www.google.com/maps/search/?api=1&query=${ph.coords[0]},${ph.coords[1]}`;
+                        }
+                        if (stop.photoSpots && stop.photoSpots.length > 0) {
                             html += `
-                                <div class="bg-white/95 rounded-xl p-2 border ${taken ? 'border-emerald-300' : 'border-pink-200/80'} shadow-sm">
-                                    <div class="flex items-start justify-between gap-1.5">
-                                        <div>
-                                            <span class="text-[9px] font-extrabold uppercase text-pink-700 bg-pink-100 px-1.5 py-0.5 rounded">⏰ Idéal : ${ph.bestTime}</span>
-                                            <div onclick="centerOnPhotoSpot([${ph.coords}], '${sPhName}', '${sPhTime}', '${sPhTip}')"
-                                                 class="text-xs font-bold text-slate-900 mt-0.5 cursor-pointer hover:text-pink-600">${ph.name}</div>
-                                        </div>
-                                        <button onclick="togglePhotoDone('${ph.id}', event)"
-                                                class="px-2 py-1 rounded-lg text-[10px] font-extrabold border shrink-0 ${taken ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-pink-700 border-pink-200'}">
-                                            ${taken ? '📷 Pris ✓' : '☐ Photo'}
-                                        </button>
-                                    </div>
-                                    <p class="text-[11px] text-slate-600 mt-1">💡 <b>Cadrage :</b> ${ph.angleTip}</p>
-                                    <div class="flex items-center justify-between mt-1.5">
-                                        <a href="${phGmaps}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-slate-600 hover:underline">📍 Y aller (Maps)</a>
-                                        <button onclick="centerOnPhotoSpot([${ph.coords}], '${sPhName}', '${sPhTime}', '${sPhTip}')" class="text-[10px] font-bold text-pink-700 hover:underline">Spot Carte 📸</button>
-                                    </div>
-                                </div>
+                                <button onclick="switchCategory('photos')" class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-800 border border-pink-200 text-[10px] font-extrabold transition-all">
+                                    <span>📸</span><span>Voir ${stop.photoSpots.length} spot${stop.photoSpots.length > 1 ? 's' : ''} photo →</span>
+                                </button>
                             `;
-                        });
+                        }
                         html += `</div>`;
                     }
 
@@ -2955,113 +3219,6 @@
                 html += `</div></div>`;
             });
 
-            // MODULE DÉPENSES PARTAGÉES & CHECKLIST GLOBALE
-            const allActivities = getAllActivitiesFlat();
-            const filteredActivities = allActivities.filter(item => {
-                if (checklistFilter === 'todo') return !isActivityDone(item.id);
-                if (checklistFilter === 'done') return isActivityDone(item.id);
-                if (checklistFilter === 'reminders') return !!remindersState[item.id];
-                return true;
-            });
-
-            const totalExpenses = sharedExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
-
-            html += `
-                <!-- Dépenses partagées en temps réel -->
-                <div class="liquid-glass rounded-2xl p-4 shadow-sm border border-slate-200/80 mt-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <div>
-                            <h3 class="font-extrabold text-slate-900 text-sm">💷 Dépenses Partagées du Groupe</h3>
-                            <p class="text-[11px] text-slate-500">Synchronisées en direct entre tous les participants</p>
-                        </div>
-                        <span class="text-xs font-extrabold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-xl">Total : £${totalExpenses.toFixed(2)}</span>
-                    </div>
-                    <div class="flex items-center space-x-1.5 mb-2.5">
-                        <input id="expense-label-input" type="text" placeholder="Ex. : Pub Soho, Taxi, Billets..." class="flex-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs" />
-                        <input id="expense-amount-input" type="number" step="0.5" placeholder="£ Montant" class="w-24 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs" />
-                        <button onclick="addSharedExpense()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shrink-0">+ Ajouter</button>
-                    </div>
-                    ${sharedExpenses.length > 0 ? `
-                        <div class="space-y-1.5 max-h-40 overflow-y-auto">
-                            ${sharedExpenses.map(e => `
-                                <div class="flex items-center justify-between bg-white/90 border border-slate-200/80 px-3 py-1.5 rounded-xl text-xs">
-                                    <div><b>${e.title}</b> <span class="text-[10px] text-slate-500">• payé par ${e.payer}</span></div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="font-extrabold text-emerald-700">£${Number(e.amount).toFixed(2)}</span>
-                                        <button onclick="deleteSharedExpense('${e.id}')" class="text-slate-400 hover:text-rose-600 font-bold">&times;</button>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : `<div class="text-[11px] text-slate-400 text-center py-2">Aucune dépense enregistrée pour l'instant.</div>`}
-                </div>
-
-                <!-- Checklist Globale -->
-                <div class="liquid-glass rounded-2xl p-4 shadow-sm border border-slate-200/80 mt-4">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-                        <div>
-                            <h3 class="font-extrabold text-slate-900 text-sm">✅ Checklist Globale : Toutes les Activités & Trajets</h3>
-                            <p class="text-[11px] text-slate-500">Cochez, activez un rappel ou exportez vers votre calendrier</p>
-                        </div>
-                        <button onclick="downloadFullTripIcs()"
-                                class="inline-flex items-center space-x-1.5 py-1.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold shadow-sm transition-all">
-                            <span>📅</span><span>Tout exporter (.ics)</span>
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-4 gap-1 bg-slate-100 p-1 rounded-xl mb-3 text-[10px] font-bold">
-                        <button onclick="setChecklistFilter('all')" class="py-1.5 rounded-lg transition-all ${checklistFilter === 'all' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600'}">
-                            Tout (${allActivities.length})
-                        </button>
-                        <button onclick="setChecklistFilter('todo')" class="py-1.5 rounded-lg transition-all ${checklistFilter === 'todo' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600'}">
-                            À faire (${allActivities.filter(a => !isActivityDone(a.id)).length})
-                        </button>
-                        <button onclick="setChecklistFilter('done')" class="py-1.5 rounded-lg transition-all ${checklistFilter === 'done' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-600'}">
-                            Fait (${allActivities.filter(a => isActivityDone(a.id)).length})
-                        </button>
-                        <button onclick="setChecklistFilter('reminders')" class="py-1.5 rounded-lg transition-all ${checklistFilter === 'reminders' ? 'bg-white text-amber-600 shadow-sm' : 'text-slate-600'}">
-                            🔔 Rappels (${Object.keys(remindersState).length})
-                        </button>
-                    </div>
-
-                    <div class="space-y-2 max-h-[380px] overflow-y-auto pr-1">
-                        ${filteredActivities.map(item => {
-                            const done = isActivityDone(item.id);
-                            const rem = remindersState[item.id];
-                            const gCalUrl = getGoogleCalendarUrl(item);
-                            return `
-                                <div class="p-2.5 rounded-xl border ${done ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white/90 border-slate-200'} transition-all hover:shadow-sm">
-                                    <div class="flex items-start space-x-2.5">
-                                        <input type="checkbox" ${done ? 'checked' : ''}
-                                               onclick="toggleActivityDone('${item.id}', event)"
-                                               class="mt-1 w-4 h-4 rounded text-emerald-600 focus:ring-0 cursor-pointer" />
-                                        <div class="flex-1 min-w-0">
-                                            <div class="flex flex-wrap items-center gap-1 mb-0.5">
-                                                <span class="text-[9px] font-extrabold uppercase tracking-wider bg-slate-200/80 text-slate-700 px-1.5 py-0.5 rounded">${item.dayShort}</span>
-                                                <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">⏰ ${item.time || item.startTime}</span>
-                                            </div>
-                                            <div onclick="jumpToActivityOnMap('${item.id}')"
-                                                 class="text-xs font-bold ${done ? 'line-through text-slate-400' : 'text-slate-900 hover:text-blue-600'} cursor-pointer">
-                                                ${item.name}
-                                            </div>
-                                            <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
-                                                <button onclick="openReminderModal('${item.id}', event)"
-                                                        class="inline-flex items-center space-x-1 text-[10px] font-bold px-2 py-0.5 rounded-md ${rem ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-800 border border-amber-200'}">
-                                                    <span>🔔</span><span>${rem ? `-${rem.offsetMinutes}m` : 'Rappel'}</span>
-                                                </button>
-                                                <a href="${gCalUrl}" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md">📅 Google</a>
-                                                <button onclick="downloadSingleIcs('${item.id}', event)" class="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">🍏 .ics</button>
-                                                <button onclick="jumpToActivityOnMap('${item.id}')" class="text-[10px] font-bold text-blue-600 hover:underline ml-auto">Voir 📍</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-            `;
-
             container.innerHTML = html;
         }
 
@@ -3077,11 +3234,10 @@
             }
         }
 
-        // --- CONFIGURATION PWA (MANIFESTE DYNAMIQUE, SERVICE WORKER HORS-LIGNE & BOUTON D'INSTALLATION) ---
+        // --- CONFIGURATION PWA ---
         let deferredPwaPrompt = null;
 
         function initPWA() {
-            // 1. Génération dynamique du Web App Manifest (100% autonome dans un seul fichier HTML)
             const iconSvgUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%232563eb'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='270'%3E%F0%9F%87%AC%F0%9F%87%A7%3C/text%3E%3C/svg%3E";
             const manifestData = {
                 name: "Carnet de Voyage Londres 2026",
@@ -3104,7 +3260,6 @@
                 if (manifestLink) manifestLink.setAttribute('href', manifestUrl);
             } catch (e) {}
 
-            // 2. Enregistrement d'un Service Worker de mise en cache pour le mode hors-ligne
             if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
                 const swCode = `
                     const CACHE_NAME = 'londres-2026-pwa-v1';
@@ -3140,7 +3295,6 @@
                 } catch (e) {}
             }
 
-            // 3. Détection de l'invite d'installation native (Android / Chrome / Edge)
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPwaPrompt = e;
@@ -3148,7 +3302,6 @@
                 if (nativeBlock) nativeBlock.classList.remove('hidden');
             });
 
-            // Masquer le bouton App si déjà lancé en mode PWA standalone
             if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
                 const btnPwa = document.getElementById('btn-pwa-install');
                 if (btnPwa) btnPwa.classList.add('hidden');
