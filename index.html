@@ -1881,9 +1881,13 @@
         function getAllBaggageItemsFlat() {
             const items = [];
             baggageChecklistData.forEach(group => {
-                group.items.forEach(label => items.push(label));
+                group.items.forEach((label, idx) => items.push({ key: `${group.id}__${idx}`, label }));
             });
             return items;
+        }
+
+        function isBaggageItemChecked(key, label) {
+            return !!(baggageState && (baggageState[key] || baggageState[label]));
         }
 
         if (!doneActivities || typeof doneActivities !== 'object' || Array.isArray(doneActivities)) {
@@ -2174,12 +2178,17 @@
             renderAirbnbContent();
         };
 
-        window.toggleBaggageItem = function(itemLabel) {
-            baggageState[itemLabel] = !baggageState[itemLabel];
+        window.toggleBaggageItem = function(itemKey, itemLabel) {
+            const currentlyChecked = isBaggageItemChecked(itemKey, itemLabel);
+            baggageState[itemKey] = !currentlyChecked;
+            if (itemLabel && itemLabel in baggageState) {
+                delete baggageState[itemLabel];
+            }
+            saveLocalState();
             pushCloudPatch('Bagage coché');
-            if (baggageState[itemLabel]) {
+            if (baggageState[itemKey]) {
                 const allItems = getAllBaggageItemsFlat();
-                const doneCount = allItems.filter(i => baggageState[i]).length;
+                const doneCount = allItems.filter(i => isBaggageItemChecked(i.key, i.label)).length;
                 if (doneCount === allItems.length) {
                     celebrateSuccess("🧳 Félicitations ! Toutes vos valises sont bouclées !");
                 } else {
@@ -2527,7 +2536,7 @@
             } else if (currentMainTab === 'checklist') {
                 const all = getAllActivitiesFlat();
                 const allBagItems = getAllBaggageItemsFlat();
-                const bagDoneCount = allBagItems.filter(i => baggageState[i]).length;
+                const bagDoneCount = allBagItems.filter(i => isBaggageItemChecked(i.key, i.label)).length;
                 const bagPct = allBagItems.length ? Math.round((bagDoneCount / allBagItems.length) * 100) : 0;
                 const totalExpenses = sharedExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
 
@@ -2567,12 +2576,12 @@
                                         <p class="text-[11px] text-slate-500 mt-0.5">${group.subtitle}</p>
                                     </div>
                                     <div class="space-y-2 pt-2 border-t border-slate-100">
-                                        ${group.items.map(item => {
-                                            const checked = !!baggageState[item];
-                                            const safeItem = escapeSafeQuote(item);
+                                        ${group.items.map((item, itemIdx) => {
+                                            const itemKey = `${group.id}__${itemIdx}`;
+                                            const checked = isBaggageItemChecked(itemKey, item);
                                             return `
-                                                <div onclick="window.toggleBaggageItem('${safeItem}')" class="p-3 rounded-2xl border ${checked ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white border-slate-200 hover:border-blue-300'} flex items-start space-x-3 cursor-pointer transition-all">
-                                                    <input type="checkbox" ${checked ? 'checked' : ''} class="mt-0.5 w-4 h-4 rounded text-emerald-600 pointer-events-none" />
+                                                <div onclick="window.toggleBaggageItem('${itemKey}', '${escapeSafeQuote(item)}')" class="p-3 rounded-2xl border ${checked ? 'bg-emerald-50/70 border-emerald-200' : 'bg-white border-slate-200 hover:border-blue-300'} flex items-start space-x-3 cursor-pointer transition-all">
+                                                    <input type="checkbox" ${checked ? 'checked' : ''} onclick="event.stopPropagation(); window.toggleBaggageItem('${itemKey}', '${escapeSafeQuote(item)}')" class="mt-0.5 w-4 h-4 rounded text-emerald-600 cursor-pointer" />
                                                     <span class="text-xs font-semibold ${checked ? 'line-through text-slate-400' : 'text-slate-800'}">${item}</span>
                                                 </div>
                                             `;
@@ -3140,11 +3149,22 @@
 
             let isApplyingRemote = false;
 
+            function sanitizeBaggageKeys(rawBag) {
+                const clean = {};
+                if (!rawBag || typeof rawBag !== 'object') return clean;
+                Object.keys(rawBag).forEach(k => {
+                    if (!/[.#$\[\]\/]/.test(k)) {
+                        clean[k] = rawBag[k];
+                    }
+                });
+                return clean;
+            }
+
             window.pushFirebaseRoomState = function(actionLabel) {
                 if (isApplyingRemote) return;
                 const payload = {
                     doneActivities: window.doneActivities || {},
-                    baggageState: window.baggageState || {},
+                    baggageState: sanitizeBaggageKeys(window.baggageState),
                     remindersMap: window.remindersMap || {},
                     testedHotspots: window.testedHotspots || {},
                     favHotspots: window.favHotspots || {},
