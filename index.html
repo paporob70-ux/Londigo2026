@@ -12,6 +12,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Londigo">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%232563eb'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='270'%3E%F0%9F%87%AC%F0%9F%87%A7%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%232563eb'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='270'%3E%F0%9F%87%AC%F0%9F%87%A7%3C/text%3E%3C/svg%3E">
+    <link id="pwa-manifest-link" rel="manifest" href="">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -3057,10 +3060,89 @@
             }, 3200);
         }
 
+        // --- GESTION PWA & INSTALLATION EDGE / CHROME / SAFARI ---
+        let deferredPwaPrompt = null;
+
+        function initPWA() {
+            const iconSvgUrl = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%232563eb'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='270'%3E%F0%9F%87%AC%F0%9F%87%A7%3C/text%3E%3C/svg%3E";
+            const manifestData = {
+                name: "Londigo - Guide de Voyage Londres 2026",
+                short_name: "Londigo",
+                description: "Carnet de voyage collaboratif et interactif pour Londres",
+                start_url: window.location.href,
+                display: "standalone",
+                orientation: "portrait",
+                background_color: "#f8fafc",
+                theme_color: "#2563eb",
+                icons: [
+                    { src: iconSvgUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+                    { src: iconSvgUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+                ]
+            };
+            try {
+                const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/manifest+json' });
+                const manifestUrl = URL.createObjectURL(manifestBlob);
+                const manifestLink = document.getElementById('pwa-manifest-link');
+                if (manifestLink) manifestLink.setAttribute('href', manifestUrl);
+            } catch (e) {}
+
+            // Enregistrement Service Worker virtuel compatible Edge / Chrome
+            if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+                const swCode = `
+                    const CACHE_NAME = 'londigo-pwa-v2';
+                    const ASSETS = ['/', location.href];
+                    self.addEventListener('install', (event) => {
+                        self.skipWaiting();
+                        event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS).catch(() => {})));
+                    });
+                    self.addEventListener('activate', (event) => {
+                        event.waitUntil(self.clients.claim());
+                    });
+                    self.addEventListener('fetch', (event) => {
+                        if (event.request.method !== 'GET') return;
+                        event.respondWith(
+                            fetch(event.request)
+                                .then(response => {
+                                    const copy = response.clone();
+                                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)).catch(() => {});
+                                    return response;
+                                })
+                                .catch(() => caches.match(event.request))
+                        );
+                    });
+                `;
+                try {
+                    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                    const swUrl = URL.createObjectURL(swBlob);
+                    navigator.serviceWorker.register(swUrl).catch(() => {});
+                } catch (e) {}
+            }
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPwaPrompt = e;
+                showToast("📲 Application installable disponible !");
+            });
+        }
+
+        window.triggerNativePwaInstall = async function() {
+            if (deferredPwaPrompt) {
+                deferredPwaPrompt.prompt();
+                const { outcome } = await deferredPwaPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    showToast("🎉 Londigo a été installé avec succès sur votre appareil !");
+                }
+                deferredPwaPrompt = null;
+            } else {
+                showToast("💡 Astuce : Dans Edge ou Chrome, cliquez sur les 3 points (menu) puis sur « Installer Londigo ».");
+            }
+        };
+
         // --- INITIALISATION AU CHARGEMENT ---
         window.addEventListener('DOMContentLoaded', () => {
             applyCurrentTheme(false);
             initMap();
+            initPWA();
             const pinInput = document.getElementById('pin-input');
             if (pinInput) {
                 pinInput.addEventListener('input', function() {
