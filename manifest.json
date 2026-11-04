@@ -1,0 +1,12 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Londigo",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Londigo",
+  "start_url": "/https://paporob70-ux.github.io/Londigo2026/",
+  "theme_color": "#2563eb",
+  "description": "Guide &amp; Checklist Londres 2026"
+}
