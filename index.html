@@ -669,7 +669,7 @@
                 items: [
                     "2 Passeports biométriques valides (obligatoires pour le Royaume-Uni)",
                     "Billets Eurostar (Aller Voiture 16 sièges 33-34 / Retour Voiture 12 sièges 78-77)",
-                    "Billets SNCB Charleroi-Central ⇄ Bruxelles-Midi + Titres LeTEC Bus 13",
+                    "Billets SNCB Aller (Charleroi-Central 08h25 → Bruxelles-Midi 09h16)",
                     "Cartes bancaires physiques + Apple Pay / Google Wallet activés (100% cashless)",
                     "Smartphones : 2 Google Pixel 11 Pro & 2 iPhone 17 Pro (Roaming UK activé)",
                     "Montres au poignet : Galaxy Watch 8 (46mm/44mm) & Apple Watch (SE 2/SE 3) pour GPS & Tube",
@@ -760,45 +760,30 @@
                 isTransitTab: true,
                 dayShort: "Trajets BE ⇄ GB",
                 dayTitle: "Trajets Belgique ⇄ Londres & Checklist Complète",
-                daySubtitle: "Départ et retour exacts : Rue de Villers 181, 6010 Couillet • Arrêt TEC Couillet Rue Ferrer (Ligne 13).",
+                daySubtitle: "Aller : Accompagnés en voiture (Couillet → Charleroi-Central, train 08h25) • Retour : Accompagnés en voiture dès Bruxelles-Midi (22h35 → Couillet).",
                 routes: [
                     {
-                        title: "Aller : Couillet (Rue de Villers 181) → London St Pancras",
-                        duration: "07h25 → 11h57",
+                        title: "Aller : Couillet (Voiture) → Charleroi-Central (08h25) → London St Pancras",
+                        duration: "07h45 → 11h57",
                         distance: "Jeudi 5 Nov",
                         travelMode: "transit",
                         stops: [
                             {
                                 id: "tr-aller-1",
                                 dateStr: "2026-11-05",
-                                startTime: "07:25",
-                                endTime: "07:32",
-                                costType: "0 € (Gratuit à pied)",
-                                time: "07h25 → 07h32 (7 min)",
-                                transport: "Marche (~2 min) vers l'arrêt Couillet Rue Ferrer",
+                                startTime: "07:45",
+                                endTime: "08:05",
+                                costType: "0 € (Accompagnés en voiture)",
+                                time: "07h45 → 08h05 (~15 min en voiture)",
+                                transport: "🚗 Accompagnés en voiture jusqu'à la Gare de Charleroi-Central",
                                 name: "Domicile — Rue de Villers 181, 6010 Couillet",
                                 coords: [50.3881, 4.4748],
                                 mapQuery: "Rue de Villers 181, 6010 Couillet, Belgique",
                                 exactAddress: "Rue de Villers 181, 6010 Couillet",
-                                desc: "Quitter le domicile (Rue de Villers 181, 6010 Couillet) à 07h25 et marcher jusqu'à l'arrêt TEC Couillet Rue Ferrer.",
+                                desc: "Départ du domicile (Rue de Villers 181, 6010 Couillet) vers 07h45 : vous êtes accompagnés directement en voiture jusqu'à la Gare de Charleroi-Central pour le train de 08h25.",
                                 photoSpots: [
-                                    { id: "ph-tr-1", name: "Photo Départ Valises devant le 181 Rue de Villers", coords: [50.3881, 4.4748], bestTime: "07h25", angleTip: "Selfie grand angle 0.5x avec les valises pour ouvrir l'album du voyage." }
+                                    { id: "ph-tr-1", name: "Photo Départ Valises devant le 181 Rue de Villers", coords: [50.3881, 4.4748], bestTime: "07h45", angleTip: "Selfie grand angle 0.5x avec les valises avant de monter dans la voiture." }
                                 ]
-                            },
-                            {
-                                id: "tr-aller-2",
-                                dateStr: "2026-11-05",
-                                startTime: "07:32",
-                                endTime: "07:50",
-                                costType: "~2,10 € / pers (Ticket TEC)",
-                                time: "07h32 → 07h50 (18 min)",
-                                transport: "Bus LeTEC Ligne 13 → Quai 19",
-                                name: "Arrêt TEC Couillet Rue Ferrer (Ligne 13)",
-                                coords: [50.3873, 4.4754],
-                                mapQuery: "Couillet Rue Ferrer, Rue Ferrer, 6010 Couillet, Belgique",
-                                exactAddress: "Arrêt Couillet Rue Ferrer (Ligne 13 LeTEC), 6010 Couillet",
-                                desc: "Prendre le Bus TEC ligne 13 à l'arrêt Couillet Rue Ferrer en direction de Charleroi Gare Centrale (quai 19).",
-                                links: { o: "https://www.letec.be/" }
                             },
                             {
                                 id: "tr-aller-3",
@@ -807,12 +792,12 @@
                                 endTime: "09:16",
                                 costType: "~11,20 € / pers (Billet SNCB)",
                                 time: "08h25 → 09h16 (51 min)",
-                                transport: "Train SNCB IC Direct (~51 min)",
-                                name: "Gare de Charleroi-Central → Bruxelles-Midi",
+                                transport: "Train SNCB IC Direct vers Bruxelles-Midi (~51 min)",
+                                name: "Gare de Charleroi-Central → Bruxelles-Midi (Train de 08h25)",
                                 coords: [50.4057, 4.4398],
                                 mapQuery: "Gare de Charleroi-Central, 6000 Charleroi, Belgique",
                                 exactAddress: "Place Emile Buisset, 6000 Charleroi",
-                                desc: "Train SNCB IC direct vers Bruxelles-Midi (~51 min).",
+                                desc: "Dépose en voiture devant la Gare de Charleroi-Central vers 08h05. Embarquement dans le train SNCB IC direct de 08h25 vers Bruxelles-Midi (arrivée à 09h16).",
                                 links: { o: "https://www.belgiantrain.be/fr" }
                             },
                             {
@@ -852,8 +837,8 @@
                         ]
                     },
                     {
-                        title: "Retour : London St Pancras → Couillet (Rue de Villers 181)",
-                        duration: "18h19 → 00h08+",
+                        title: "Retour : London St Pancras → Bruxelles-Midi (22h35) → Couillet en voiture",
+                        duration: "18h19 → ~23h25",
                         distance: "Dimanche 8 Nov",
                         travelMode: "transit",
                         stops: [
@@ -877,44 +862,29 @@
                                 id: "tr-retour-2",
                                 dateStr: "2026-11-08",
                                 startTime: "22:35",
-                                endTime: "23:05",
-                                costType: "~11,20 € / pers (Billet SNCB)",
-                                time: "22h35 → 23h05 (30 min correspondance)",
-                                transport: "Correspondance SNCB Voie 21",
-                                name: "Gare de Bruxelles-Midi (Départ 23h05 Voie 21)",
+                                endTime: "23:25",
+                                costType: "0 € (Accompagnés en voiture)",
+                                time: "22h35 → ~23h25 (~50 min en voiture)",
+                                transport: "🚗 Prise en charge en voiture à Bruxelles-Midi vers Couillet",
+                                name: "Gare de Bruxelles-Midi → Retour direct en voiture vers Couillet",
                                 coords: [50.8357, 4.3365],
                                 mapQuery: "Gare de Bruxelles-Midi, 1060 Bruxelles, Belgique",
                                 exactAddress: "Avenue Fonsny 47B, 1060 Bruxelles",
-                                desc: "Arrivée Eurostar à 22h35. Train SNCB de 23h05 vers Charleroi-Central (Voie 21).",
-                                links: { o: "https://www.belgiantrain.be/fr" }
-                            },
-                            {
-                                id: "tr-retour-3",
-                                dateStr: "2026-11-09",
-                                startTime: "00:08",
-                                endTime: "00:25",
-                                costType: "Proche ou Taxi (~15–20 €)",
-                                time: "00h08 → 00h25 (Lundi 9 Nov)",
-                                transport: "Train SNCB (1h03) puis Taxi / Proche",
-                                name: "Arrivée Gare de Charleroi-Central",
-                                coords: [50.4057, 4.4398],
-                                mapQuery: "Gare de Charleroi-Central, 6000 Charleroi, Belgique",
-                                exactAddress: "Place Emile Buisset, 6000 Charleroi",
-                                desc: "Arrivée prévue à 00h08. Retour en voiture vers le 181 Rue de Villers."
+                                desc: "Arrivée de l'Eurostar à Bruxelles-Midi à 22h35. Vous êtes accompagnés directement en voiture depuis la Gare de Bruxelles-Midi jusqu'au 181 Rue de Villers à 6010 Couillet."
                             },
                             {
                                 id: "tr-retour-4",
-                                dateStr: "2026-11-09",
-                                startTime: "00:25",
-                                endTime: "00:40",
+                                dateStr: "2026-11-08",
+                                startTime: "23:25",
+                                endTime: "23:35",
                                 costType: "0 € (Arrivée Maison)",
-                                time: "00h25 (Arrivée Domicile)",
-                                transport: "Retour jusqu'au domicile",
+                                time: "Vers 23h25 (Arrivée Domicile)",
+                                transport: "🚗 Arrivée directe en voiture au domicile",
                                 name: "Domicile — Rue de Villers 181, 6010 Couillet",
                                 coords: [50.3881, 4.4748],
                                 mapQuery: "Rue de Villers 181, 6010 Couillet, Belgique",
                                 exactAddress: "Rue de Villers 181, 6010 Couillet",
-                                desc: "Arrivée finale à votre domicile, Rue de Villers 181 à 6010 Couillet."
+                                desc: "Arrivée confortable en voiture directement devant votre domicile, Rue de Villers 181 à 6010 Couillet vers 23h25."
                             }
                         ]
                     }
@@ -2081,7 +2051,7 @@
                                 name: "Enregistrement & Départ Eurostar — London St Pancras",
                                 coords: [51.5314, -0.1261],
                                 mapQuery: "St Pancras International, Euston Road, London N1C 4QP, UK",
-                                desc: "Arrivée conseillée à 18h19 (75 min avant le départ). Départ Eurostar 19h34 → Bruxelles-Midi 22h35 → Train SNCB 23h05 (Voie 21) → Charleroi-Central 00h08 → Retour Rue de Villers 181, 6010 Couillet.",
+                                desc: "Arrivée conseillée à 18h19 (75 min avant le départ). Départ Eurostar 19h34 → Arrivée Bruxelles-Midi 22h35 → Retour accompagnés en voiture jusqu'à la Rue de Villers 181, 6010 Couillet (~23h25).",
                                 links: { o: "https://www.eurostar.com/fr-be" },
                                 hotspots: [
                                     {
@@ -2336,62 +2306,59 @@
             currentModalActivityId = null;
         };
 
+        // Met à jour instantanément tous les boutons Rappel visibles dans le DOM (y compris sur GitHub Pages)
+        window.refreshReminderButtonsInDom = function() {
+            const activeReminders = window.remindersState || remindersState || {};
+            document.querySelectorAll('[data-reminder-btn]').forEach(btn => {
+                const sid = btn.getAttribute('data-reminder-btn');
+                const rem = activeReminders[sid];
+                if (rem && typeof rem === 'object') {
+                    const label = rem.offsetMinutes === 0 ? 'Actif (0m) ✓' : `Actif -${rem.offsetMinutes}m ✓`;
+                    btn.className = "shrink-0 px-2.5 py-1 rounded-xl text-[10px] font-extrabold transition-all reminder-btn-active";
+                    btn.innerHTML = `🔔 ${label}`;
+                } else {
+                    btn.className = "shrink-0 px-2.5 py-1 rounded-xl text-[10px] font-extrabold transition-all reminder-btn-idle";
+                    btn.innerHTML = `🔔 Rappel`;
+                }
+            });
+        };
+
         window.saveReminderFromModal = function() {
             if (!currentModalActivityId) return;
             const targetId = currentModalActivityId;
             requestBrowserNotificationPermission();
-            const offsetMinutes = parseInt(document.getElementById('reminder-offset-select').value, 10);
+            const offsetEl = document.getElementById('reminder-offset-select');
+            const offsetMinutes = offsetEl ? parseInt(offsetEl.value, 10) : 30;
+
             if (!window.remindersState || typeof window.remindersState !== 'object') window.remindersState = {};
-            window.remindersState[targetId] = { offsetMinutes, triggered: false, savedAt: Date.now() };
+            const newRemObj = { offsetMinutes: isNaN(offsetMinutes) ? 30 : offsetMinutes, triggered: false, savedAt: Date.now() };
+            window.remindersState[targetId] = newRemObj;
             remindersState = window.remindersState;
+            window.lastLocalReminderLockUntil = Date.now() + 5000;
+
+            localStorage.setItem('london2026_reminders_v6', JSON.stringify(window.remindersState));
             window.closeReminderModal();
-            pushCloudPatch(`Rappel activé (-${offsetMinutes}m)`);
-            playCelebrationBeep();
             renderAirbnbContent();
-            showToast(`🔔 Rappel ambre actif (${offsetMinutes === 0 ? "à l'heure exacte" : offsetMinutes + " min avant"}) !`);
+            window.refreshReminderButtonsInDom();
+            pushCloudPatch(`Rappel activé (-${newRemObj.offsetMinutes}m)`);
+            playCelebrationBeep();
+            showToast(`🔔 Rappel ambre actif (${newRemObj.offsetMinutes === 0 ? "à l'heure exacte" : newRemObj.offsetMinutes + " min avant"}) !`);
         };
 
         window.removeReminderFromModal = function() {
             if (!currentModalActivityId) return;
             const targetId = currentModalActivityId;
-            if (window.remindersState) delete window.remindersState[targetId];
+            if (!window.remindersState || typeof window.remindersState !== 'object') window.remindersState = {};
+            delete window.remindersState[targetId];
             if (remindersState) delete remindersState[targetId];
+            window.lastLocalReminderLockUntil = Date.now() + 5000;
+
+            localStorage.setItem('london2026_reminders_v6', JSON.stringify(window.remindersState));
             window.closeReminderModal();
-            pushCloudPatch('Rappel supprimé');
             renderAirbnbContent();
+            window.refreshReminderButtonsInDom();
+            pushCloudPatch('Rappel supprimé');
             showToast("🗑️ Rappel désactivé.");
-        };
-
-        window.closeReminderModal = function() {
-            const modal = document.getElementById('reminder-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            currentModalActivityId = null;
-        };
-
-        window.saveReminderFromModal = function() {
-            if (!currentModalActivityId) return;
-            const targetId = currentModalActivityId;
-            requestBrowserNotificationPermission();
-            const offsetMinutes = parseInt(document.getElementById('reminder-offset-select').value, 10);
-            remindersState[targetId] = { offsetMinutes, triggered: false, savedAt: Date.now() };
-            window.remindersState = remindersState;
-            window.closeReminderModal();
-            pushCloudPatch(`Rappel activé (-${offsetMinutes}m)`);
-            playCelebrationBeep();
-            renderAirbnbContent();
-            showToast(`🔔 Rappel activé (${offsetMinutes === 0 ? "à l'heure exacte" : offsetMinutes + " min avant"}) !`);
-        };
-
-        window.removeReminderFromModal = function() {
-            if (!currentModalActivityId) return;
-            const targetId = currentModalActivityId;
-            delete remindersState[targetId];
-            window.remindersState = remindersState;
-            window.closeReminderModal();
-            pushCloudPatch('Rappel supprimé');
-            renderAirbnbContent();
-            showToast("🗑️ Rappel supprimé.");
         };
 
         window.testNotificationNow = function() {
@@ -2672,21 +2639,24 @@
                     <div class="space-y-4 pb-24">
                         <div class="liquid-glass rounded-3xl p-5 shadow-sm border border-emerald-200 bg-emerald-50/60">
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-extrabold text-emerald-800 uppercase tracking-wider">🏠 Départ & Retour • Couillet 6010</span>
-                                <button onclick="window.focusCouilletPoints()" class="text-xs font-bold text-emerald-700 hover:underline">Voir Couillet 🔍</button>
+                                <span class="text-xs font-extrabold text-emerald-800 uppercase tracking-wider">🚗 Départ & Retour accompagnés en voiture • Couillet 6010</span>
+                                <button onclick="window.focusCouilletPoints()" class="text-xs font-bold text-emerald-700 hover:underline">Voir Trajet Couillet 🔍</button>
                             </div>
-                            <p class="text-xs text-slate-700"><b>Départ :</b> Rue de Villers 181, 6010 Couillet → Marche vers l'arrêt <b>Couillet Rue Ferrer (Ligne 13 LeTEC)</b> à 07h32.</p>
+                            <p class="text-xs text-slate-700 leading-relaxed">
+                                <b>Aller (Jeu 5 Nov) :</b> Départ accompagné en voiture du <b>181 Rue de Villers, 6010 Couillet</b> vers 07h45 → <b>Gare de Charleroi-Central</b> pour le train SNCB de <b>08h25</b> vers Bruxelles-Midi.<br>
+                                <b>Retour (Dim 8 Nov) :</b> Arrivée Eurostar à <b>Bruxelles-Midi à 22h35</b> → Retour direct accompagnés en voiture jusqu'au <b>181 Rue de Villers, 6010 Couillet</b> (~23h25).
+                            </p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div class="airbnb-card liquid-glass rounded-3xl p-5 border border-slate-200 shadow-sm">
-                                <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">🚄 Eurostar Aller</span>
-                                <h3 class="font-extrabold text-sm text-slate-900 mt-1">Jeu 5 Nov • 10h56 → 11h57</h3>
-                                <p class="text-xs text-slate-600 mt-1">Bruxelles-Midi → St Pancras (Voiture 16, Sièges 33-34)</p>
+                                <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">🚗 + 🚄 Aller Jeudi 5 Nov</span>
+                                <h3 class="font-extrabold text-sm text-slate-900 mt-1">Train 08h25 • Eurostar 10h56 → 11h57</h3>
+                                <p class="text-xs text-slate-600 mt-1">Voiture → Charleroi 08h25 → Bruxelles-Midi (Voiture 16, Sièges 33-34)</p>
                             </div>
                             <div class="airbnb-card liquid-glass rounded-3xl p-5 border border-slate-200 shadow-sm">
-                                <span class="text-[10px] font-bold text-slate-700 uppercase tracking-wider">🚄 Eurostar Retour</span>
-                                <h3 class="font-extrabold text-sm text-slate-900 mt-1">Dim 8 Nov • 19h34 → 22h35</h3>
-                                <p class="text-xs text-slate-600 mt-1">St Pancras → Bruxelles-Midi (Voiture 12, Sièges 78-77)</p>
+                                <span class="text-[10px] font-bold text-slate-700 uppercase tracking-wider">🚄 + 🚗 Retour Dimanche 8 Nov</span>
+                                <h3 class="font-extrabold text-sm text-slate-900 mt-1">Eurostar 19h34 → 22h35 • Voiture</h3>
+                                <p class="text-xs text-slate-600 mt-1">St Pancras (Voiture 12, Sièges 78-77) → Bruxelles-Midi 22h35 → Voiture Couillet</p>
                             </div>
                         </div>
                         <div class="space-y-3">
@@ -2954,7 +2924,7 @@
                                                         <div class="text-xs font-bold ${done ? 'line-through text-slate-400' : 'text-slate-900'}">${item.name}</div>
                                                     </div>
                                                 </div>
-                                                <button type="button" onclick="window.openReminderModal('${item.id}')" class="shrink-0 px-2.5 py-1 rounded-xl text-[10px] font-extrabold transition-all ${rem ? 'reminder-btn-active' : 'reminder-btn-idle'}">
+                                                <button type="button" data-reminder-btn="${item.id}" onclick="event.stopPropagation(); window.openReminderModal('${item.id}')" class="shrink-0 px-2.5 py-1 rounded-xl text-[10px] font-extrabold transition-all ${rem ? 'reminder-btn-active' : 'reminder-btn-idle'}">
                                                     🔔 ${remText}
                                                 </button>
                                             </div>
@@ -3069,7 +3039,7 @@
                                                 <span class="block text-[9px] uppercase tracking-wider font-bold opacity-80">Horaire & Durée</span>
                                                 <span class="text-xs sm:text-sm font-extrabold">⏰ ${stop.time || stop.startTime}</span>
                                             </div>
-                                            <button type="button" onclick="window.openReminderModal('${stop.id}')" class="px-2.5 py-1 rounded-xl text-[10px] font-extrabold transition-all ${rem ? 'reminder-btn-active' : 'reminder-btn-idle'}">
+                                            <button type="button" data-reminder-btn="${stop.id}" onclick="event.stopPropagation(); window.openReminderModal('${stop.id}')" class="shrink-0 px-2.5 py-1 rounded-xl text-[10px] font-extrabold transition-all ${rem ? 'reminder-btn-active' : 'reminder-btn-idle'}">
                                                 🔔 ${remBadgeLabel}
                                             </button>
                                         </div>
@@ -3259,12 +3229,12 @@
             if (!map) return;
             clearMap();
             const homeCoords = [50.3881, 4.4748];
-            const busStopCoords = [50.3873, 4.4754];
-            let m1 = L.marker(homeCoords).addTo(map).bindPopup(buildMapPopupHtml("🏠 Domicile — Rue de Villers 181", "6010 Couillet", "07h25", "", homeCoords));
-            let m2 = L.marker(busStopCoords).addTo(map).bindPopup(buildMapPopupHtml("🚌 Arrêt TEC Couillet Rue Ferrer", "Ligne 13 vers Charleroi-Central", "07h32", "~2,10 €", busStopCoords));
+            const charleroiStationCoords = [50.4057, 4.4398];
+            let m1 = L.marker(homeCoords).addTo(map).bindPopup(buildMapPopupHtml("🏠 Domicile — Rue de Villers 181", "6010 Couillet (Départ accompagné en voiture)", "07h45", "0 €", homeCoords));
+            let m2 = L.marker(charleroiStationCoords).addTo(map).bindPopup(buildMapPopupHtml("🚄 Gare de Charleroi-Central", "Train SNCB IC direct de 08h25 vers Bruxelles-Midi", "08h25", "~11,20 €", charleroiStationCoords));
             currentMarkers.push(m1, m2);
-            polylineLayer = L.polyline([homeCoords, busStopCoords], { color: '#10b981', weight: 4, dashArray: '4, 6' }).addTo(map);
-            map.fitBounds(L.latLngBounds([homeCoords, busStopCoords]), { padding: [60, 60], maxZoom: 17 });
+            polylineLayer = L.polyline([homeCoords, charleroiStationCoords], { color: '#10b981', weight: 4, dashArray: '4, 6' }).addTo(map);
+            map.fitBounds(L.latLngBounds([homeCoords, charleroiStationCoords]), { padding: [60, 60], maxZoom: 14 });
             m1.openPopup();
         };
 
@@ -3889,8 +3859,9 @@
                 if (data.sharedExpenses) window.sharedExpenses = JSON.parse(data.sharedExpenses);
                 if (data.baggageState) window.baggageState = JSON.parse(data.baggageState);
                 if (data.baggageChecklistData) window.baggageChecklistData = JSON.parse(data.baggageChecklistData);
-                if (data.remindersState) {
-                    window.remindersState = JSON.parse(data.remindersState);
+                if (data.remindersState && (!window.lastLocalReminderLockUntil || Date.now() > window.lastLocalReminderLockUntil)) {
+                    const parsedCloudReminders = JSON.parse(data.remindersState);
+                    window.remindersState = { ...(window.remindersState || {}), ...parsedCloudReminders };
                     remindersState = window.remindersState;
                 }
                 if (data.participantsMap) {
@@ -3902,6 +3873,7 @@
                 if (typeof window.updateGlobalProgress === 'function') window.updateGlobalProgress();
                 if (typeof window.updateCollabHeaderUI === 'function') window.updateCollabHeaderUI();
                 if (typeof window.renderAirbnbContent === 'function') window.renderAirbnbContent();
+                if (typeof window.refreshReminderButtonsInDom === 'function') window.refreshReminderButtonsInDom();
                 if (typeof window.renderCollabParticipantsList === 'function') window.renderCollabParticipantsList();
 
                 if (data.lastUpdatedBy) {
